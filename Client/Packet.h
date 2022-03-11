@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
+#include <ctime>
 using namespace std;
 const int EmptyPktSize = 6;					//Number of data bytes in a packet with no data field
 const int usernameLength = 20;
@@ -19,6 +20,7 @@ protected:
 	{
 		char type[typeNameSize];
 		int length;
+		time_t timestamp;
 	}head;
 
 public:
@@ -27,6 +29,7 @@ public:
 	{
 		memset(head.type, 0, typeNameSize);
 		head.length = 0;
+		head.timestamp = time(NULL);
 	}
 	void SetHeader(char* type)
 	{
@@ -40,7 +43,10 @@ public:
 	{
 		return 0;
 	}
-
+	time_t GetTime()
+	{
+		return head.timestamp;
+	}
 	//print object data on console
 	virtual void Print()
 	{
