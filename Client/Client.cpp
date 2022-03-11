@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "Packet.h"
+#include "Packets.h"
 using namespace std;
 
 int main()
@@ -33,8 +33,21 @@ int main()
 		WSACleanup();
 		return 0;
 	}
-
-
+	///////////////////////////////////
+	char TxBuffer[1024] = {};
+	Packet* pkt;
+	char packetType[typeNameSize] = "Account";
+	char actionType[typeNameSize] = "login";
+	char username[usernameLength] = "Geyang";
+	char password[passwordLength] = "GeyangPassword";
+	pkt = new AccountPacket(actionType,username,password);
+	pkt->SetHeader(packetType);
+	//store packet type at beginning of string
+	memcpy(TxBuffer, pkt->GetType(), typeNameSize);
+	pkt->GetSerializedData(TxBuffer + typeNameSize);
+	cout << TxBuffer << endl;
+	send(ClientSocket, TxBuffer, sizeof(TxBuffer), 0);
+	delete pkt;
 	//closes connection and socket
 	closesocket(ClientSocket);
 
