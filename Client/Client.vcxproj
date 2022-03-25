@@ -145,6 +145,7 @@
     <ClInclude Include="AccountPacket.h" />
     <ClInclude Include="ChatroomPacket.h" />
     <ClInclude Include="MessagePacket.h" />
+    <ClInclude Include="NetworkFunctions.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Packets.h" />
     <ClInclude Include="ResponsePacket.h" />

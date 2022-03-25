@@ -4,11 +4,17 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "Packets.h"
+//#include "Packets.h"
+#include "NetworkFunctions.h"
+#define _CRT_SECURE_NO_WARNINGS
 using namespace std;
+
+
+//enum ClientState{Welcome,Main,Chatroom};
 
 int main()
 {
+	
 	//starts Winsock DLLs
 	WSADATA wsaData;
 	if ((WSAStartup(MAKEWORD(2, 2), &wsaData)) != 0) {
@@ -34,20 +40,42 @@ int main()
 		return 0;
 	}
 	///////////////////////////////////
-	char TxBuffer[1024] = {};
-	Packet* pkt;
-	char packetType[typeNameSize] = "Account";
-	char actionType[typeNameSize] = "login";
-	char username[usernameLength] = "Geyang";
-	char password[passwordLength] = "GeyangPassword";
-	pkt = new AccountPacket(actionType,username,password);
-	pkt->SetHeader(packetType);
-	//store packet type at beginning of string
-	memcpy(TxBuffer, pkt->GetType(), typeNameSize);
-	pkt->GetSerializedData(TxBuffer + typeNameSize);
-	cout << TxBuffer << endl;
-	send(ClientSocket, TxBuffer, sizeof(TxBuffer), 0);
-	delete pkt;
+	ClientState currentState = Welcome;
+	char currentUser[usernameLength] = "";
+	ChatroomData currentChatroom = {0};
+	vector<ChatroomData> chatroomList;
+	char usernameBuffer[usernameLength] = {};
+	char passwordBuffer[passwordLength] = {};
+	while (1)
+	{
+		
+		switch (currentState)
+		{
+		case Welcome:
+			cout << "Login/Register" << endl;
+			cout << "Enter username:";
+			cin >> usernameBuffer;
+			cout << "Enter password:";
+			cin >> passwordBuffer;
+			if (RegisterLogin(ClientSocket, usernameBuffer,passwordBuffer, 0))
+			{
+				strncpy_s(currentUser, usernameBuffer, usernameLength);
+				currentState = Lobby;
+				//
+			}
+
+			break;
+		case Lobby:
+			cout << "Logged in as " << usernameBuffer << endl;
+			break;
+		case Chatroom:
+
+			break;
+		default:
+			break;
+		}
+		system("CLS");
+	}
 	//closes connection and socket
 	closesocket(ClientSocket);
 

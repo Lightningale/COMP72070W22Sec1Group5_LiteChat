@@ -13,9 +13,10 @@ public:
 		memcpy(&head, src, sizeof(Header));
 		memcpy(&responseData, src + sizeof(Header), sizeof(ResponseData));
 	}
-	ResponsePacket(char* response)
+	ResponsePacket(const char* response)
 	{
 		memcpy(responseData.response , response, responseSize);
+		this->SetHeader(typeResponse,"");
 	}
 	//serialize object and store in buffer
 	void GetSerializedData(char* buffer)

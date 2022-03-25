@@ -4,7 +4,7 @@ class AccountPacket :public Packet
 {
 	struct AccountData
 	{
-		char actionType[typeNameSize];
+		//char actionType[typeNameSize];
 		char username[usernameLength];
 		char password[passwordLength];
 	}accountData;
@@ -15,11 +15,12 @@ public:
 		memcpy(&head, src, sizeof(Header));
 		memcpy(&accountData, src + sizeof(Header), sizeof(AccountData));
 	}
-	AccountPacket(char* actionType, char* username, char* password)
+	AccountPacket(const char* actionType, const char* username, const char* password)
 	{
-		memcpy(accountData.actionType, actionType, typeNameSize);
+		//memcpy(accountData.actionType, actionType, typeNameSize);
 		memcpy(accountData.username, username, usernameLength);
 		memcpy(accountData.password, password, passwordLength);
+		this->SetHeader(typeAccount,actionType);
 	}
 	//serialize object and store in buffer
 	void GetSerializedData(char* buffer)
@@ -29,7 +30,7 @@ public:
 	}
 	char* GetActionType()
 	{
-		return accountData.actionType;
+		return head.action;
 	}
 	char* GetUserName()
 	{
@@ -42,7 +43,7 @@ public:
 	void Print()
 	{
 		cout << "Packet type:" << head.type << endl;
-		cout << "Action:" << accountData.actionType << endl;
+		cout << "Action:" << head.action << endl;
 		cout << "Username:" << accountData.username << endl;
 		cout << "Password:" << accountData.password << endl;
 	}

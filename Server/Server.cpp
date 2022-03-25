@@ -1,7 +1,7 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
 #include <string>
-#include "../Client/Packets.h"
+#include "../Client/NetworkFunctions.h"
 #pragma comment(lib, "Ws2_32.lib")
 
 using namespace std;
@@ -56,12 +56,13 @@ int main()
 	/////////////////////////////////////////
 	//Packet* rxPkt;
 	char RxBuffer[1024] = {};
-	char PacketType[typeNameSize] = "Account";
 	char RxPacketType[typeNameSize] = {};
 	recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 	cout << RxBuffer << endl;
 	memcpy(RxPacketType, RxBuffer, typeNameSize);
-	if (memcmp(RxPacketType, PacketType, typeNameSize) == 0)
+
+	//Account packet
+	if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
 	{
 		//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
 		//rxPkt->Print();
@@ -69,8 +70,9 @@ int main()
 		memcpy(Buffer, RxBuffer + typeNameSize, sizeof(AccountPacket));
 		AccountPacket rxPkt(Buffer);
 		rxPkt.Print();
+		sendResponse(ConnectionSocket, true);
 	}
-		
+	//
 
 
 
