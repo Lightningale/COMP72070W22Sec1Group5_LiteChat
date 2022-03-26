@@ -35,10 +35,13 @@
     <ClInclude Include="MessagePacket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResponsePacket.h">
+    <ClInclude Include="HeaderPacket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkFunctions.h">
+    <ClInclude Include="ClientFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

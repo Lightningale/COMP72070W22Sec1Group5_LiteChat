@@ -12,19 +12,30 @@ const int typeNameSize = 10;
 const int chatroomIDSize = 20;
 const int chatroomNameSize = 20;
 const int messageLength = 200;
-const int responseSize = 10;
+const int responseSize = 20;
 const char typeAccount[typeNameSize] = "Account";
 const char typeChatroom[typeNameSize] = "Chatroom";
 const char typeMessage[typeNameSize] = "Message";
 const char typeResponse[typeNameSize] = "Response";
 const char actionRegister[typeNameSize] = "Register";
 const char actionLogin[typeNameSize] = "Login";
+const char actionEnterChatroom[typeNameSize] = "EnterRoom";
 const char actionNewChatroom[typeNameSize] = "NewRoom";
 const char actionJoinChatroom[typeNameSize] = "JoinRoom";
 const char actionLeaveChatroom[typeNameSize] = "LeaveRoom";
 const char roomData[typeNameSize] = "RoomData";
 const char responseSuccess[responseSize] = "Success";
-const char responseFail[responseSize] = "Fail";
+const char respRegisterFail[responseSize] = "RegisterFail";
+const char respLoginFail[responseSize] = "LoginFail";
+const char createRoomFail[responseSize] = "CreateRoomFail";
+const char respRegisterSuccess[responseSize] = "RegisterSuccess";
+const char respLoginSuccess[responseSize] = "LoginSuccess";
+const char createRoomSuccess[responseSize] = "CreateRoomSuccess";
+const char respChatroomList[responseSize] = "ChatroomList";
+const char respMemberList[responseSize] = "MemberList";
+const char respMessageList[responseSize] = "MessageList";
+const char errRegister[messageLength] = "Username taken";
+const char errLogin[messageLength] = "Wrong username or password";
 class Packet
 {
 protected:
@@ -32,7 +43,7 @@ protected:
 	{
 		char type[typeNameSize];
 		char action[typeNameSize];
-		int length;
+		int size;
 		time_t timestamp;
 	}head;
 
@@ -41,7 +52,7 @@ public:
 	Packet()
 	{
 		memset(head.type, 0, typeNameSize);
-		head.length = 0;
+		head.size = sizeof(head);
 		head.timestamp = time(NULL);
 	}
 	void SetHeader(const char* type,const char* action)

@@ -145,10 +145,11 @@
     <ClInclude Include="AccountPacket.h" />
     <ClInclude Include="ChatroomPacket.h" />
     <ClInclude Include="MessagePacket.h" />
-    <ClInclude Include="NetworkFunctions.h" />
+    <ClInclude Include="ClientFunctions.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Packets.h" />
-    <ClInclude Include="ResponsePacket.h" />
+    <ClInclude Include="HeaderPacket.h" />
+    <ClInclude Include="ServerFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

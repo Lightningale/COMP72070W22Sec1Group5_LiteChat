@@ -1,7 +1,7 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
 #include <string>
-#include "../Client/NetworkFunctions.h"
+#include "../Client/ServerFunctions.h"
 #pragma comment(lib, "Ws2_32.lib")
 
 using namespace std;
@@ -54,23 +54,50 @@ int main()
 
 	cout << "Connection Established" << endl;
 	/////////////////////////////////////////
+	// 
+	
 	//Packet* rxPkt;
+	
 	char RxBuffer[1024] = {};
 	char RxPacketType[typeNameSize] = {};
-	recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-	cout << RxBuffer << endl;
-	memcpy(RxPacketType, RxBuffer, typeNameSize);
+	while (1)
 
-	//Account packet
-	if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
 	{
-		//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
-		//rxPkt->Print();
-		char Buffer[sizeof(AccountPacket)] = {};
-		memcpy(Buffer, RxBuffer + typeNameSize, sizeof(AccountPacket));
-		AccountPacket rxPkt(Buffer);
-		rxPkt.Print();
-		sendResponse(ConnectionSocket, true);
+		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+		//cout << RxBuffer << endl;
+		memcpy(RxPacketType, RxBuffer, typeNameSize);
+
+		//received register and login
+		if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
+		{
+			//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
+			//rxPkt->Print();
+			char Buffer[sizeof(AccountPacket)] = {};
+			memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
+			AccountPacket rxPkt(Buffer);
+			rxPkt.Print();
+			if (VerifyLogin(rxPkt.GetUsername(), rxPkt.GetPassword()))
+			{
+				sendLogin(ConnectionSocket, rxPkt);
+				sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
+			}
+			else
+			{
+				senFailResponse(ConnectionSocket, respLoginFail);
+			}
+		}
+		//received chat message
+		else if (memcmp(RxPacketType, typeMessage, typeNameSize) == 0)
+		{
+			//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
+			//rxPkt->Print();
+			char Buffer[sizeof(MessagePacket)] = {};
+			memcpy(Buffer, RxBuffer, sizeof(MessagePacket));
+			MessagePacket rxMsgPkt(Buffer);
+			//rxMsgPkt.Print();
+			StoreMessage(rxMsgPkt);
+			RelayMessage(ConnectionSocket, rxMsgPkt);
+		}
 	}
 	//
 

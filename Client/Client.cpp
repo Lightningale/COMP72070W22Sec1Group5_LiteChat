@@ -4,8 +4,10 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <thread>
 //#include "Packets.h"
-#include "NetworkFunctions.h"
+#include "ClientFunctions.h"
 #define _CRT_SECURE_NO_WARNINGS
 using namespace std;
 
@@ -40,42 +42,16 @@ int main()
 		return 0;
 	}
 	///////////////////////////////////
-	ClientState currentState = Welcome;
-	char currentUser[usernameLength] = "";
-	ChatroomData currentChatroom = {0};
-	vector<ChatroomData> chatroomList;
+	currentState = ClientState::Welcome;
 	char usernameBuffer[usernameLength] = {};
 	char passwordBuffer[passwordLength] = {};
-	while (1)
-	{
-		
-		switch (currentState)
-		{
-		case Welcome:
-			cout << "Login/Register" << endl;
-			cout << "Enter username:";
-			cin >> usernameBuffer;
-			cout << "Enter password:";
-			cin >> passwordBuffer;
-			if (RegisterLogin(ClientSocket, usernameBuffer,passwordBuffer, 0))
-			{
-				strncpy_s(currentUser, usernameBuffer, usernameLength);
-				currentState = Lobby;
-				//
-			}
+	cursor = 0;
+	errorFlag = 0;
+	thread UIthread(ClientStateMachine, ClientSocket);
+	thread ReceivingThread(recvResponse, ClientSocket);
 
-			break;
-		case Lobby:
-			cout << "Logged in as " << usernameBuffer << endl;
-			break;
-		case Chatroom:
-
-			break;
-		default:
-			break;
-		}
-		system("CLS");
-	}
+	UIthread.join();
+	ReceivingThread.join();
 	//closes connection and socket
 	closesocket(ClientSocket);
 

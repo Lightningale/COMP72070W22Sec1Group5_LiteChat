@@ -1,13 +1,14 @@
 #pragma once
 #include "Packet.h"
+struct AccountData
+{
+	//char actionType[typeNameSize];
+	char username[usernameLength];
+	char password[passwordLength];
+};
 class AccountPacket :public Packet
 {
-	struct AccountData
-	{
-		//char actionType[typeNameSize];
-		char username[usernameLength];
-		char password[passwordLength];
-	}accountData;
+	AccountData accountData;
 
 public:
 	AccountPacket(char* src)
@@ -21,6 +22,7 @@ public:
 		memcpy(accountData.username, username, usernameLength);
 		memcpy(accountData.password, password, passwordLength);
 		this->SetHeader(typeAccount,actionType);
+		head.size += sizeof(AccountData);
 	}
 	//serialize object and store in buffer
 	void GetSerializedData(char* buffer)
@@ -32,7 +34,7 @@ public:
 	{
 		return head.action;
 	}
-	char* GetUserName()
+	char* GetUsername()
 	{
 		return accountData.username;
 	}
@@ -40,6 +42,11 @@ public:
 	{
 		return accountData.password;
 	}
+	AccountData GetAccountData()
+	{
+		return accountData;
+	}
+
 	void Print()
 	{
 		cout << "Packet type:" << head.type << endl;

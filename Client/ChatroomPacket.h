@@ -25,6 +25,7 @@ public:
 		memcpy(chatroomData.chatroomName, chatroomName, chatroomNameSize);
 		memcpy(chatroomData.owner, ownerName, chatroomNameSize);
 		this->SetHeader(typeChatroom,actionType);
+		head.size += sizeof(ChatroomData);
 	}
 	//Constructor that takes room id for join or leave room
 	ChatroomPacket(const char* actionType, long roomID)
@@ -32,6 +33,7 @@ public:
 		//memcpy(chatroomData.actionType, actionType, typeNameSize);
 		chatroomData.chatroomID = roomID;
 		this->SetHeader(typeChatroom,actionType);
+		head.size += sizeof(ChatroomData);
 	}
 	void SetRoomName(const char* chatroomName)
 	{

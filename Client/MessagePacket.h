@@ -1,16 +1,17 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma once
 #include "Packet.h"
-
+struct MessageData
+{
+	//char actionType[typeNameSize];
+	char username[usernameLength];
+	long chatroomID;
+	char message[messageLength];
+	time_t timestamp;
+};
 class MessagePacket :public Packet
 {
-	struct MessageData
-	{
-		//char actionType[typeNameSize];
-		char username[usernameLength];
-		long chatroomID;
-		char message[messageLength];
-	}messageData;
+	MessageData messageData;
 
 public:
 	MessagePacket(char* src)
@@ -24,7 +25,9 @@ public:
 		memcpy(messageData.username, username, usernameLength);
 		messageData.chatroomID = chatroomID;
 		memcpy(messageData.message, message, messageLength);
+		messageData.timestamp = head.timestamp;
 		this->SetHeader(typeMessage,actionType);
+		head.size += sizeof(MessageData);
 	}
 	//serialize object and store in buffer
 	void GetSerializedData(char* buffer)
@@ -44,19 +47,19 @@ public:
 	{
 		return messageData.chatroomID;
 	}
+	MessageData GetMessageData()
+	{
+		return messageData;
+	}
 	void Print()
 	{
-		/*cout << "Packet type:" << head.type << endl;
-		cout << "Action:" << messageData.actionType << endl;
-		cout << "Chatroom ID:" << messageData.chatroomID << endl;
-		cout << "User Name:" << messageData.username << endl;
-		cout << "Message:" << messageData.message << endl;*/
-		char time[26] = {};
-		struct tm buf;
-		localtime_s(&buf, &this->head.timestamp);
-		asctime_s(time, sizeof(time), &buf);
+
+	//	char time[26] = {};
+	//	struct tm buf;
+	//	localtime_s(&buf, &messageData.timestamp);
+	//	asctime_s(time, sizeof(time), &buf);
 		//cout << messageData.username << "|" << asctime(localtime(&this->head.timestamp)) << endl;
-		cout << messageData.username << "|" << time << endl;
+		cout << messageData.username << "|" <<"at room "<<messageData.chatroomID << endl;
 		cout << messageData.message << endl << endl;
 	}
 };
