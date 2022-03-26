@@ -116,11 +116,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Conestoga college\Winter 2022\Project IV\COMP72070W22_LiteChat\COMP72070W22_LiteChat\Client;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\dom17\source\repos\LiteChat\MySQL Connector C++ 8.0\include\mysqlx;C:\Users\dom17\source\repos\LiteChat\MySQL Connector C++ 8.0\include\mysql;C:\Users\dom17\source\repos\LiteChat\MySQL Connector C++ 8.0\include\jdbc;C:\Users\dom17\source\repos\LiteChat\MySQL Connector C++ 8.0;D:\Conestoga college\Winter 2022\Project IV\COMP72070W22_LiteChat\COMP72070W22_LiteChat\Client;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\dom17\source\repos\LiteChat\mysql-connector-c++-8.0.28-winx64\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mysqlcppconn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,12 +142,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Database.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.vcxproj">
       <Project>{f9303f3c-3915-4d0f-9ddd-66c17ba54c80}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Database.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
