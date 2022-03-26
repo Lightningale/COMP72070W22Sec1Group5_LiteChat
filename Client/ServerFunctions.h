@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <ctime>
-void senFailResponse(SOCKET socket,const char* failmsg)
+void sendFailResponse(SOCKET socket,const char* failmsg)
 {
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(failmsg, 0);
@@ -64,6 +64,7 @@ void sendChatroomInfo(SOCKET socket, long chatroomID)
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);
 	delete pkt;
 }
+
 //send a list of all chatrooms the user is in
 void sendChatroomList(SOCKET socket, const char* username)
 {
@@ -88,6 +89,38 @@ void sendChatroomList(SOCKET socket, const char* username)
 		sendChatroomInfo(socket, mockChatroomList[i].chatroomID);
 	}
 }
+//create a new chatroom in database and store data in dest.
+void CreateChatroom(SOCKET socket, const char* chatroomName, const char* username)
+{
+
+	//create a room entry in database and store data here
+	ChatroomData mockRoom = { "testCreateRoom","someUser",10000 + rand()};
+	char TxBuffer[1024] = {};
+	Packet* pkt = new HeaderPacket(respChatroomList, 1);
+	pkt->GetSerializedData(TxBuffer);
+	memcpy(TxBuffer + sizeof(HeaderPacket), &mockRoom, sizeof(ChatroomData));
+	send(socket, TxBuffer, sizeof(TxBuffer), 0);
+	sendChatroomInfo(socket, mockRoom.chatroomID);
+}
+//return false if no matching chatroom found, otherwise store chatroom data in dest
+void JoinChatroom(SOCKET socket, long chatroomID)
+{
+	//return fa
+	if (chatroomID == 10004)
+	{
+		ChatroomData mockRoom = { "testJoinRoom","someUser",10004 };
+		char TxBuffer[1024] = {};
+		Packet* pkt = new HeaderPacket(respChatroomList, 1);
+		pkt->GetSerializedData(TxBuffer);
+		memcpy(TxBuffer + sizeof(HeaderPacket), &mockRoom, sizeof(ChatroomData));
+		send(socket, TxBuffer, sizeof(TxBuffer), 0);
+		sendChatroomInfo(socket, 10004);
+	}
+	else
+	{
+		sendFailResponse(socket, respJoinRoomFail);
+	}
+}
 //store a message into the chatroom message table in database
 void StoreMessage(MessagePacket msgPkt)
 {
@@ -105,6 +138,8 @@ void RelayMessage(SOCKET socket,MessagePacket msgPkt)
 	msgPkt.Print();
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);
 }
+
+
 bool VerifyRegister(const char* username, const char* password)
 {
 	return true;

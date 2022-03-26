@@ -54,10 +54,10 @@ public:
 	void Print()
 	{
 
-	//	char time[26] = {};
-	//	struct tm buf;
-	//	localtime_s(&buf, &messageData.timestamp);
-	//	asctime_s(time, sizeof(time), &buf);
+		char time[26] = {};
+		struct tm buf;
+		localtime_s(&buf, &messageData.timestamp);
+		asctime_s(time, sizeof(time), &buf);
 		//cout << messageData.username << "|" << asctime(localtime(&this->head.timestamp)) << endl;
 		cout << messageData.username << "|" <<"at room "<<messageData.chatroomID << endl;
 		cout << messageData.message << endl << endl;

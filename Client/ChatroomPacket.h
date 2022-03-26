@@ -57,13 +57,13 @@ public:
 		memcpy(buffer, &head, sizeof(Header));
 		memcpy(buffer + sizeof(Header), &chatroomData, sizeof(ChatroomData));
 	}
-	char* GetActionType()
-	{
-		return head.action;
-	}
 	char* GetChatroomName()
 	{
 		return chatroomData.chatroomName;
+	}
+	char* GetOwnerName()
+	{
+		return chatroomData.owner;
 	}
 	ChatroomData GetChatroomData()
 	{

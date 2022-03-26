@@ -83,7 +83,32 @@ int main()
 			}
 			else
 			{
-				senFailResponse(ConnectionSocket, respLoginFail);
+				sendFailResponse(ConnectionSocket, respLoginFail);
+			}
+		}
+		//received chatroom request
+		else if (memcmp(RxPacketType, typeChatroom, typeNameSize) == 0)
+		{
+			char Buffer[sizeof(ChatroomPacket)] = {};
+			memcpy(Buffer, RxBuffer, sizeof(ChatroomPacket));
+			ChatroomPacket rxRoomPkt(Buffer);
+			//rxRoomPkt.Print();
+			//new room
+			if (strncmp(rxRoomPkt.GetAction(), actionNewChatroom, typeNameSize) == 0)
+			{
+				rxRoomPkt.Print();
+				CreateChatroom(ConnectionSocket, rxRoomPkt.GetChatroomName(),rxRoomPkt.GetOwnerName());
+			}
+			//join room
+			if (strncmp(rxRoomPkt.GetAction(), actionJoinChatroom, typeNameSize) == 0)
+			{
+				rxRoomPkt.Print();
+				JoinChatroom(ConnectionSocket, rxRoomPkt.GetChatroomID());
+			}
+			//leave room
+			if (strncmp(rxRoomPkt.GetAction(), actionLeaveChatroom, typeNameSize) == 0)
+			{
+
 			}
 		}
 		//received chat message
