@@ -58,7 +58,7 @@ void DB_CREATE_USER_ROOM_TABLE(sql::Connection* connection, string user) {
 	statement = connection->createStatement();
 	statement->execute("USE " + database_name);
 	statement->execute("DROP TABLE IF EXISTS " + query);
-	statement->execute("CREATE TABLE " + query + "(roomID INT, FOREIGN KEY (id) REFERENCES chatrooms(id) ON UPDATE CASCADE ON DELETE CASCADE)");
+	statement->execute("CREATE TABLE " + query + "(roomID INT, FOREIGN KEY (roomID) REFERENCES chatrooms(id) ON DELETE CASCADE ON UPDATE CASCADE)");
 	delete statement;
 }
 
@@ -69,7 +69,7 @@ void DB_CREATE_CHATROOM_USERS_TABLE(sql::Connection* connection, string chatroom
 	statement = connection->createStatement();
 	statement->execute("USE " + database_name);
 	statement->execute("DROP TABLE IF EXISTS " + query);
-	statement->execute("CREATE TABLE " + query + "(userID INT, FOREIGN KEY (id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE)");
+	statement->execute("CREATE TABLE " + query + "(userID INT, FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE)");
 	delete statement;
 }
 
