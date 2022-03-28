@@ -27,18 +27,18 @@ int main()
 
 	DB_CREATE_CHATROOM_USERS_TABLE(connection, "studygroup");
 
-	// Insert a user into users table 
-	DB_INSERT_INTO_USERS(connection, "cheshirecat", "zulu", 444);
-	DB_INSERT_INTO_USERS(connection, "orangeblackbox", "delta", 654);
-	
-	//Insert a chatroom into chatrooms table
-	DB_INSERT_INTO_CHATROOMS(connection, "study group", "orangeblackbox", 762);
+	//// Insert a user into users table 
+	//DB_INSERT_INTO_USERS(connection, "cheshirecat", "zulu", 444);
+	//DB_INSERT_INTO_USERS(connection, "orangeblackbox", "delta", 654);
+	//
+	////Insert a chatroom into chatrooms table
+	//DB_INSERT_INTO_CHATROOMS(connection, "study group", "orangeblackbox", 762);
 
-	// Checks for the username in the users table
-	DB_CHECK_USER(connection, "cheshirecat");
+	//// Checks for the username in the users table
+	//DB_CHECK_USER(connection, "cheshirecat");
 
-	// Remove user from database
-	DB_REMOVE_USER(connection, "cheshirecat");
+	//// Remove user from database
+	//DB_REMOVE_USER(connection, "cheshirecat");
 
 
 	// Ends connection with SQL database
