@@ -1,11 +1,13 @@
 #pragma once
-/*#include <windows.networking.sockets.h>
-#include "Packets.h"
-
+#pragma once
+#include <windows.networking.sockets.h>
+#include "../Client/Packets.h"
+#include "database.h"
 #include <vector>
 #include <map>
 #include <ctime>
-void sendFailResponse(SOCKET socket,const char* failmsg)
+
+void sendFailResponse(SOCKET socket, const char* failmsg)
 {
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(failmsg, 0);
@@ -35,7 +37,7 @@ void sendChatroomInfo(SOCKET socket, long chatroomID)
 	vector<AccountData> mockMemberList;
 	mockMemberList.push_back({ "user 1","pw1" });
 	mockMemberList.push_back({ "user 2","pw2" });
-	if(chatroomID==10003)
+	if (chatroomID == 10003)
 		mockMemberList.push_back({ "user 3","pw3" });
 	/////////////////////////////////////////////////////
 	char TxBuffer[1024] = {};
@@ -71,9 +73,9 @@ void sendChatroomList(SOCKET socket, const char* username)
 {
 	//replace this with data retrieved from database
 	vector<ChatroomData> mockChatroomList;
-	mockChatroomList.push_back({ "room1","user1",10001});
-	mockChatroomList.push_back({ "room2","user2",10002});
-	mockChatroomList.push_back({ "room3","user3",10003});
+	mockChatroomList.push_back({ "room1","user1",10001 });
+	mockChatroomList.push_back({ "room2","user2",10002 });
+	mockChatroomList.push_back({ "room3","user3",10003 });
 	/////////////////////////////////////////////////////
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(respChatroomList, mockChatroomList.size());
@@ -95,7 +97,7 @@ void CreateChatroom(SOCKET socket, const char* chatroomName, const char* usernam
 {
 
 	//create a room entry in database and store data here
-	ChatroomData mockRoom = { "testCreateRoom","someUser",10000 + rand()};
+	ChatroomData mockRoom = { "testCreateRoom","someUser",10000 + rand() };
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(respChatroomList, 1);
 	pkt->GetSerializedData(TxBuffer);
@@ -128,7 +130,7 @@ void StoreMessage(MessagePacket msgPkt)
 
 }
 //send a message to every connected socket where the logged in user is in the chatroom
-void RelayMessage(SOCKET socket,MessagePacket msgPkt)
+void RelayMessage(SOCKET socket, MessagePacket msgPkt)
 {
 	char TxBuffer[1024] = {};
 	Packet* header = new HeaderPacket(respMessageList, 1);
@@ -154,67 +156,67 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 {
 	char RxBuffer[1024] = {};
 	char RxPacketType[typeNameSize] = {};
-		if(recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0)<=0)
-			return false;
-		//cout << RxBuffer << endl;
-		memcpy(RxPacketType, RxBuffer, typeNameSize);
+	if (recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0) <= 0)
+		return false;
+	//cout << RxBuffer << endl;
+	memcpy(RxPacketType, RxBuffer, typeNameSize);
 
-		//received register and login
-		if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
+	//received register and login
+	if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
+	{
+		//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
+		//rxPkt->Print();
+		char Buffer[sizeof(AccountPacket)] = {};
+		memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
+		AccountPacket rxPkt(Buffer);
+		rxPkt.Print();
+		if (VerifyLogin(rxPkt.GetUsername(), rxPkt.GetPassword()))
 		{
-			//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
-			//rxPkt->Print();
-			char Buffer[sizeof(AccountPacket)] = {};
-			memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
-			AccountPacket rxPkt(Buffer);
-			rxPkt.Print();
-			if (VerifyLogin(rxPkt.GetUsername(), rxPkt.GetPassword()))
-			{
-				sendLogin(ConnectionSocket, rxPkt);
-				sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
-			}
-			else
-			{
-				sendFailResponse(ConnectionSocket, respLoginFail);
-			}
+			sendLogin(ConnectionSocket, rxPkt);
+			sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
 		}
-		//received chatroom request
-		else if (memcmp(RxPacketType, typeChatroom, typeNameSize) == 0)
+		else
 		{
-			char Buffer[sizeof(ChatroomPacket)] = {};
-			memcpy(Buffer, RxBuffer, sizeof(ChatroomPacket));
-			ChatroomPacket rxRoomPkt(Buffer);
-			//rxRoomPkt.Print();
-			//new room
-			if (strncmp(rxRoomPkt.GetAction(), actionNewChatroom, typeNameSize) == 0)
-			{
-				rxRoomPkt.Print();
-				CreateChatroom(ConnectionSocket, rxRoomPkt.GetChatroomName(), rxRoomPkt.GetOwnerName());
-			}
-			//join room
-			if (strncmp(rxRoomPkt.GetAction(), actionJoinChatroom, typeNameSize) == 0)
-			{
-				rxRoomPkt.Print();
-				JoinChatroom(ConnectionSocket, rxRoomPkt.GetChatroomID());
-			}
-			//leave room
-			if (strncmp(rxRoomPkt.GetAction(), actionLeaveChatroom, typeNameSize) == 0)
-			{
+			sendFailResponse(ConnectionSocket, respLoginFail);
+		}
+	}
+	//received chatroom request
+	else if (memcmp(RxPacketType, typeChatroom, typeNameSize) == 0)
+	{
+		char Buffer[sizeof(ChatroomPacket)] = {};
+		memcpy(Buffer, RxBuffer, sizeof(ChatroomPacket));
+		ChatroomPacket rxRoomPkt(Buffer);
+		//rxRoomPkt.Print();
+		//new room
+		if (strncmp(rxRoomPkt.GetAction(), actionNewChatroom, typeNameSize) == 0)
+		{
+			rxRoomPkt.Print();
+			CreateChatroom(ConnectionSocket, rxRoomPkt.GetChatroomName(), rxRoomPkt.GetOwnerName());
+		}
+		//join room
+		if (strncmp(rxRoomPkt.GetAction(), actionJoinChatroom, typeNameSize) == 0)
+		{
+			rxRoomPkt.Print();
+			JoinChatroom(ConnectionSocket, rxRoomPkt.GetChatroomID());
+		}
+		//leave room
+		if (strncmp(rxRoomPkt.GetAction(), actionLeaveChatroom, typeNameSize) == 0)
+		{
 
-			}
 		}
-		//received chat message
-		else if (memcmp(RxPacketType, typeMessage, typeNameSize) == 0)
-		{
-			//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
-			//rxPkt->Print();
-			char Buffer[sizeof(MessagePacket)] = {};
-			memcpy(Buffer, RxBuffer, sizeof(MessagePacket));
-			MessagePacket rxMsgPkt(Buffer);
-			//rxMsgPkt.Print();
-			StoreMessage(rxMsgPkt);
-			RelayMessage(ConnectionSocket, rxMsgPkt);
-		}
-		return true;
+	}
+	//received chat message
+	else if (memcmp(RxPacketType, typeMessage, typeNameSize) == 0)
+	{
+		//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
+		//rxPkt->Print();
+		char Buffer[sizeof(MessagePacket)] = {};
+		memcpy(Buffer, RxBuffer, sizeof(MessagePacket));
+		MessagePacket rxMsgPkt(Buffer);
+		//rxMsgPkt.Print();
+		StoreMessage(rxMsgPkt);
+		RelayMessage(ConnectionSocket, rxMsgPkt);
+	}
+	return true;
 
-}*/
+}

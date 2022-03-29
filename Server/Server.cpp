@@ -2,7 +2,8 @@
 #include <stdint.h> 
 #include <iostream>
 #include <string>
-#include "../Client/ServerFunctions.h"
+#include "ServerFunctions.h"
+]
 #pragma comment(lib, "Ws2_32.lib")
 
 #define MAXCLIENTS 30
@@ -10,6 +11,11 @@ using namespace std;
 
 int main()
 {
+	// Start connection with SQL database
+	sql::Connection* DBconnection;
+	DBconnection = DB_CONNECT();
+
+
 	//starts Winsock DLLs		
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -258,6 +264,7 @@ int main()
 
 
 	//closesocket(ConnectionSocket);	//closes incoming socket
+	delete DBconnection;
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
 
