@@ -2,8 +2,11 @@
 #pragma comment(lib, "Ws2_32.lib")
 #include <fstream>
 #include <string>
+#include <iterator>
 #include <iostream>
 #include <vector>
+#include <string>
+#include "Send.h"
 #include "Packets.h"
 using namespace std;
 

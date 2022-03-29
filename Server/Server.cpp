@@ -1,6 +1,10 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <iterator>
 #include <string>
+#include "ServerSend.h"
 #include "../Client/Packets.h"
 #pragma comment(lib, "Ws2_32.lib")
 
