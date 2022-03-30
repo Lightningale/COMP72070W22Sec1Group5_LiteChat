@@ -1,18 +1,7 @@
-#include "Database.h"
+/*#include "Database.h"
 using namespace std;
 using namespace sql;
 
-sql::mysql::MySQL_Driver* driver;
-sql::Connection* connection;
-sql::Statement* statement;
-sql::ResultSet* result;
-
-// username and password are subjected to change after integration
-//Change to port number and account passwords on your local machine
-const string server = "tcp://127.0.0.1:3308";
-const sql::SQLString username = "connector";
-const sql::SQLString password = "connectorPassword";
-const sql::SQLString database_name = "LiteChat";
 
 //Sets up the connection between the C++ connector to the MySQL server
 sql::Connection* DB_CONNECT() {
@@ -137,3 +126,4 @@ void DB_REMOVE_CHATROOM(sql::Connection*, string chatroom_name) {
 
 	delete statement;
 }
+*/

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "ServerFunctions.h"
-]
+
 #pragma comment(lib, "Ws2_32.lib")
 
 #define MAXCLIENTS 30

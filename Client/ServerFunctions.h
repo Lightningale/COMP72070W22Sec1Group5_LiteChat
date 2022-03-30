@@ -1,5 +1,5 @@
 #pragma once
-/*#include <windows.networking.sockets.h>
+#include <windows.networking.sockets.h>
 #include "Packets.h"
 
 #include <vector>
@@ -217,4 +217,4 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		}
 		return true;
 
-}*/
+}

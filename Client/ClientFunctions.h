@@ -64,15 +64,14 @@ void recvResponse(SOCKET socket)
 			//memcpy(Buffer, RxBuffer + typeNameSize, sizeof(HeaderPacket));
 			memcpy(Buffer, RxBuffer, sizeof(HeaderPacket));
 			HeaderPacket rxPkt(Buffer);
-			rxPkt.Print();
+			//rxPkt.Print();
 			//received register/login success message
 			if (strncmp(rxPkt.getResponse(), respLoginSuccess, responseSize) == 0 || strncmp(rxPkt.getResponse(), respRegisterSuccess, responseSize) == 0)
 			{
 				errorFlag = 0;
 				AccountPacket accountBuffer(RxBuffer + sizeof(HeaderPacket));
 				currentUser = accountBuffer.GetAccountData();
-				//memcpy(&currentUser, RxBuffer + sizeof(HeaderPacket), sizeof(AccountData));
-				//currentUser = accountBuffer;
+				cursor = 0;
 				currentState = ClientState::Lobby;
 			}
 			//received list of chatroom data
@@ -126,8 +125,10 @@ void RegisterLogin(SOCKET socket, char* username,char* password, int i)
 	Packet* pkt;
 	if (i == 0)
 		pkt = new AccountPacket(actionRegister, username, password);
-	else
+	else if(i==1)
 		pkt = new AccountPacket(actionLogin, username, password);
+	else if (i == 2)
+		pkt = new AccountPacket(actionLogout, username, password);
 	//store packet type at beginning of string
 	//memcpy(TxBuffer, pkt->GetType(), typeNameSize);
 	pkt->GetSerializedData(TxBuffer );
@@ -169,7 +170,36 @@ void LeaveChatroom(SOCKET socket, long roomID)
 
 }
 
+void WelcomWindow(SOCKET ClientSocket)
+{
+	cout << "Register"; if (cursor == 0) { cout << "<";}cout << endl;
+	cout << "Login"; if (cursor == 1) { cout << "<"; }cout << endl;
+	DisplayError();
 
+	char usernameBuffer[usernameLength] = {};
+	char passwordBuffer[passwordLength] = {};
+	int input = 0;
+	switch ((input = _getch()))
+	{
+	case 72://key up
+		if (cursor > 0)
+			cursor--;
+		break;
+	case 80://key down
+		if (cursor < 1)
+			cursor++;
+		break;
+	case '\r'://enter
+		cout << "Enter username:";
+		cin >> usernameBuffer;
+		cout << "Enter password:";
+		cin >> passwordBuffer;
+		RegisterLogin(ClientSocket, usernameBuffer, passwordBuffer, cursor);
+		break;
+	}
+	
+
+}
 void LobbyWindow(SOCKET ClientSocket)
 {
 	cout << "Logged in as " << currentUser.username << endl<<endl;
@@ -189,7 +219,9 @@ void LobbyWindow(SOCKET ClientSocket)
 	cout << endl << "JoinChatroom";
 	if (cursor == chatroomList.size()+1)
 		cout << "<";
-	cout << endl;
+	cout << endl<<"Sign out";
+	if (cursor == chatroomList.size() + 2)
+		cout << "<";
 	int input = 0;
 	switch ((input = _getch()))
 	{
@@ -198,7 +230,7 @@ void LobbyWindow(SOCKET ClientSocket)
 				cursor--;
 			break;
 		case 80://key down
-			if (cursor < chatroomList.size()+1)
+			if (cursor < chatroomList.size()+2)
 				cursor++;
 			break;
 		case '\r'://enter
@@ -223,6 +255,17 @@ void LobbyWindow(SOCKET ClientSocket)
 				cin >> idBuff;
 				if (idBuff > 0)
 					JoinChatroom(ClientSocket, idBuff);
+			}
+			//sign out
+			else if (cursor == chatroomList.size() + 2)
+			{
+				long idBuff;
+				cout << "enter room id:";
+				cin >> idBuff;
+				if (idBuff > 0)
+					JoinChatroom(ClientSocket, idBuff);
+				cursor = 0;
+				currentState = ClientState::Welcome;
 			}
 			break;
 	}
@@ -289,25 +332,18 @@ void ClientStateMachine(SOCKET ClientSocket)
 {
 	while (1)
 	{
-		char usernameBuffer[usernameLength] = {};
-		char passwordBuffer[passwordLength] = {};
+
 		switch (currentState)
 		{
 		case ClientState::Welcome:
-			cout << "Login/Register" << endl;
-			DisplayError();
-			cout << "Enter username:";
-			cin >> usernameBuffer;
-			cout << "Enter password:";
-			cin >> passwordBuffer;
-			RegisterLogin(ClientSocket, usernameBuffer, passwordBuffer, 0);
+
 			//{
 			//	strncpy_s(currentUser, usernameBuffer, usernameLength);
 			//	currentState = Lobby;
 			//	recvResponse(ClientSocket);
 			//	//
 			//}
-
+			WelcomWindow(ClientSocket);
 			break;
 		case ClientState::Lobby:
 

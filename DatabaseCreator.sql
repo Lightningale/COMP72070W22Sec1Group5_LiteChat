@@ -19,8 +19,8 @@ CREATE TABLE `RoomMembers`(
 `ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 `roomID` INT NOT NULL,
 `username` varchar(20) NOT NULL,
-FOREIGN KEY (`roomID`) REFERENCES `Chatrooms` (`roomID`),
-FOREIGN KEY (`username`) REFERENCES `Users` (`username`)
+FOREIGN KEY (`roomID`) REFERENCES `Chatrooms` (`roomID`) ON DELETE CASCADE,
+FOREIGN KEY (`username`) REFERENCES `Users` (`username`)ON DELETE CASCADE
 )ENGINE=InnoDB;
 CREATE TABLE `Messages`(
 `ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE `Messages`(
 `username` varchar(20) NOT NULL,
 `timestamp` DATETIME NOT NULL,
 `message` varchar(200),
-FOREIGN KEY (`roomID`) REFERENCES `Chatrooms` (`roomID`),
+FOREIGN KEY (`roomID`) REFERENCES `Chatrooms` (`roomID`) ON DELETE CASCADE,
 FOREIGN KEY (`username`) REFERENCES `Users` (`username`)
 )ENGINE=InnoDB;
 
@@ -36,3 +36,4 @@ FOREIGN KEY (`username`) REFERENCES `Users` (`username`)
 
 GRANT SELECT, INSERT, CREATE, DROP ON `LiteChat`.* TO connector@localhost;
 SHOW GRANTS for connector@localhost;
+SELECT * FROM USERS;

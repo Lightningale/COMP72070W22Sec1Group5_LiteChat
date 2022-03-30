@@ -1,12 +1,12 @@
 #pragma once
-#pragma once
 #include <windows.networking.sockets.h>
 #include "../Client/Packets.h"
 #include "database.h"
 #include <vector>
+#include <iterator>
 #include <map>
 #include <ctime>
-
+map<string, SOCKET> userSocketMap;
 void sendFailResponse(SOCKET socket, const char* failmsg)
 {
 	char TxBuffer[1024] = {};
@@ -21,6 +21,19 @@ void sendLogin(SOCKET socket, AccountPacket account)
 {
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(respLoginSuccess, 1);
+
+	//memcpy(TxBuffer, pkt->GetType(), typeNameSize);
+	//pkt->GetSerializedData(TxBuffer + typeNameSize);
+	pkt->GetSerializedData(TxBuffer);
+	account.GetSerializedData(TxBuffer + sizeof(HeaderPacket));
+	//send string over socket
+	send(socket, TxBuffer, sizeof(TxBuffer), 0);
+	delete pkt;
+}
+void sendLogout(SOCKET socket, AccountPacket account)
+{
+	char TxBuffer[1024] = {};
+	Packet* pkt = new HeaderPacket(respLogoutSuccess, 1);
 
 	//memcpy(TxBuffer, pkt->GetType(), typeNameSize);
 	//pkt->GetSerializedData(TxBuffer + typeNameSize);
@@ -143,13 +156,56 @@ void RelayMessage(SOCKET socket, MessagePacket msgPkt)
 }
 
 
-bool VerifyRegister(const char* username, const char* password)
+bool VerifyRegister(SOCKET socket,const char* username, const char* password)
 {
+	//verify if account exists
+	sql::Statement* statement = connection->createStatement();
+	statement->execute("USE " + database_name);
+	result = statement->executeQuery("SELECT username FROM Users WHERE username = '"+string(username,usernameLength)+"'");
+	if (result->rowsCount() >0)
+	{
+		cout << "username "<<username<<" already exists" << endl;
+		delete statement;
+		delete result;
+		return false;
+	}
+	/*while (result->next()) {
+		if (strncmp(username, result->getString("username").c_str(),usernameLength ) ==0) {
+			cout << "username already exists" << endl;
+			delete statement;
+			delete result;
+			return false;
+		}
+	}*/
+
+	delete statement;
+	delete result;
+	//register account
+	string concacenate_to_sql = "'" + string(username,usernameLength) + "', " + "'" + password + "'" + ");";
+	sql::SQLString query = concacenate_to_sql;
+
+	statement = connection->createStatement();
+	statement->execute("USE " + database_name);
+	statement->execute("INSERT INTO Users(username, password) VALUES (" + query);
+	delete statement;
+	//add user to user socket list
+	userSocketMap.insert(pair<string, SOCKET>(string(username, usernameLength),socket));
 	return true;
 }
-bool VerifyLogin(const char* username, const char* password)
+bool VerifyLogin( SOCKET socket,const char* username, const char* password)
 {
-	return true;
+	sql::Statement* statement = connection->createStatement();
+	statement->execute("USE " + database_name);
+	result = statement->executeQuery("SELECT username FROM Users WHERE username = '" + string(username, usernameLength) + "' AND password = '"+ string(password, passwordLength)+"';");
+	if (result->rowsCount() > 0)
+	{
+		delete statement;
+		delete result;
+		//add user to user socket list
+		userSocketMap.insert(pair<string, SOCKET>(string(username, usernameLength), socket));
+		return true;
+	}
+	return false;
 }
 
 bool RecvClientPacket(SOCKET ConnectionSocket)
@@ -161,7 +217,7 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 	//cout << RxBuffer << endl;
 	memcpy(RxPacketType, RxBuffer, typeNameSize);
 
-	//received register and login
+	//handle register and login requests
 	if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
 	{
 		//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
@@ -170,15 +226,38 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
 		AccountPacket rxPkt(Buffer);
 		rxPkt.Print();
-		if (VerifyLogin(rxPkt.GetUsername(), rxPkt.GetPassword()))
+		//register
+		if (strncmp(rxPkt.GetAction(), actionRegister, typeNameSize) == 0)
 		{
-			sendLogin(ConnectionSocket, rxPkt);
-			sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
+			if (VerifyRegister(ConnectionSocket, rxPkt.GetUsername(), rxPkt.GetPassword()))
+			{
+				sendLogin(ConnectionSocket, rxPkt);
+				sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
+			}
+			else
+			{
+				sendFailResponse(ConnectionSocket, respRegisterFail);
+			}
 		}
-		else
+		//login
+		else if (strncmp(rxPkt.GetAction(), actionLogin, typeNameSize) == 0)
 		{
-			sendFailResponse(ConnectionSocket, respLoginFail);
+			if (VerifyLogin(ConnectionSocket, rxPkt.GetUsername(), rxPkt.GetPassword()))
+			{
+				sendLogin(ConnectionSocket, rxPkt);
+				sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
+			}
+			else
+			{
+				sendFailResponse(ConnectionSocket, respLoginFail);
+			}
 		}
+		//logout
+		else if (strncmp(rxPkt.GetAction(), actionLogout, typeNameSize) == 0)
+		{
+			userSocketMap.erase(string(rxPkt.GetUsername(), usernameLength));
+		}
+
 	}
 	//received chatroom request
 	else if (memcmp(RxPacketType, typeChatroom, typeNameSize) == 0)
