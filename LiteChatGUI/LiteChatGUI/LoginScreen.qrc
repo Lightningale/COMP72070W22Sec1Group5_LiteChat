@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="LoginScreen"/>
+  <qresource prefix="Background">
+    <file>../Content/CreateAccountScreen.png</file>
+    <file>../Content/Group 16.png</file>
+    <file>../Content/LoginScreen.png</file>
+    <file>../Content/Chatscreen.png</file>
+  </qresource>
+</RCC>
