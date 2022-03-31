@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_LoginScreen.h"
+#include <string>
 
 class LoginScreen : public QMainWindow
 {
@@ -18,11 +19,20 @@ public:
         connect(ui.createButton, SIGNAL(clicked()), this, SLOT(on_createText_clicked()));
     }
 
+    void readInput()
+    {
+        QString username = ui.usernameBox->toPlainText();
+        QString password = ui.passwordBox->text();
+    }
+
 public slots:
     void on_loginButton_clicked()
     {
         // check if login details are correct here
         // if they are: run this snippet of code
+
+        // if the username or password are incorrect
+            // make loginError labelvisible
 
         // temp check to make sure it works
         ui.loginButton->setText("clicked");

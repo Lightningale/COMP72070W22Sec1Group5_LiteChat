@@ -58,7 +58,7 @@
      </font>
     </property>
     <property name="cursor" stdset="0">
-     <cursorShape>PointingHandCursor</cursorShape>
+     <cursorShape>IBeamCursor</cursorShape>
     </property>
    </widget>
    <widget class="QPushButton" name="loginButton">
@@ -209,25 +209,6 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QTextEdit" name="passwordBox">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>405</y>
-      <width>241</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Lucida Sans</family>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="cursor" stdset="0">
-     <cursorShape>PointingHandCursor</cursorShape>
-    </property>
-   </widget>
    <widget class="QPushButton" name="createButton">
     <property name="geometry">
      <rect>
@@ -374,6 +355,19 @@
     </property>
     <property name="flat">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="passwordBox_2">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>405</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
     </property>
    </widget>
   </widget>
