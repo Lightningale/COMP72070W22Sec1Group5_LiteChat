@@ -78,7 +78,7 @@ public:
 		cout << "Packet type:" << head.type << endl;
 		cout << "Action:" << head.action << endl;
 		cout << "Chatroom ID:" << chatroomData.chatroomID << endl;
-		cout << "Chatroom Name:" << chatroomData.chatroomName << endl;
-		cout << "Chatroom Owner:" << chatroomData.owner << endl;
+		cout << "Chatroom Name:'" << string(chatroomData.chatroomName,chatroomNameSize) <<"'"<< endl;
+		cout << "Chatroom Owner:'" << string(chatroomData.owner,usernameLength) << "'"<<endl;
 	}
 };

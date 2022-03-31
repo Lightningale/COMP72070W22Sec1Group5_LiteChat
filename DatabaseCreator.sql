@@ -36,4 +36,7 @@ FOREIGN KEY (`username`) REFERENCES `Users` (`username`)
 
 GRANT SELECT, INSERT, CREATE, DROP ON `LiteChat`.* TO connector@localhost;
 SHOW GRANTS for connector@localhost;
-SELECT * FROM USERS;
+INSERT INTO Users VALUES('geyang',"geyangpassword");
+INSERT INTO Users VALUES('shane',"shanepassword");
+select * from chatrooms;
+select * from roomMembers;

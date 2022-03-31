@@ -165,7 +165,9 @@ int main()
 					getpeername(sd, (struct sockaddr*)&SvrAddr,(int *)&addrlen);
 					printf("Host disconnected , ip %s , port %d \n",
 						inet_ntoa(SvrAddr.sin_addr), ntohs(SvrAddr.sin_port));
-
+					
+					userSocketMap.erase(socketUserMap.find(sd)->second);
+					socketUserMap.erase(sd);
 					//Close the socket and mark as 0 in list for reuse 
 					closesocket(sd);
 					ClientSocket[i] = 0;

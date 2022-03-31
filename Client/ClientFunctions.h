@@ -18,6 +18,7 @@ map<long, vector<AccountData>> chatroomMemberMap;
 map<long, vector<MessageData>> chatroomMessageMap;
 int cursor;
 int errorFlag=0;
+HeaderPacket* lastRxPkt=new HeaderPacket("",0);
 void DisplayError()
 {
 	switch (errorFlag)
@@ -64,6 +65,8 @@ void recvResponse(SOCKET socket)
 			//memcpy(Buffer, RxBuffer + typeNameSize, sizeof(HeaderPacket));
 			memcpy(Buffer, RxBuffer, sizeof(HeaderPacket));
 			HeaderPacket rxPkt(Buffer);
+			delete lastRxPkt;
+			lastRxPkt = new HeaderPacket(Buffer);
 			//rxPkt.Print();
 			//received register/login success message
 			if (strncmp(rxPkt.getResponse(), respLoginSuccess, responseSize) == 0 || strncmp(rxPkt.getResponse(), respRegisterSuccess, responseSize) == 0)
@@ -127,7 +130,7 @@ void RegisterLogin(SOCKET socket, char* username,char* password, int i)
 		pkt = new AccountPacket(actionRegister, username, password);
 	else if(i==1)
 		pkt = new AccountPacket(actionLogin, username, password);
-	else if (i == 2)
+	else
 		pkt = new AccountPacket(actionLogout, username, password);
 	//store packet type at beginning of string
 	//memcpy(TxBuffer, pkt->GetType(), typeNameSize);
@@ -172,12 +175,13 @@ void LeaveChatroom(SOCKET socket, long roomID)
 
 void WelcomWindow(SOCKET ClientSocket)
 {
+	lastRxPkt->Print();
 	cout << "Register"; if (cursor == 0) { cout << "<";}cout << endl;
 	cout << "Login"; if (cursor == 1) { cout << "<"; }cout << endl;
 	DisplayError();
 
-	char usernameBuffer[usernameLength] = {};
-	char passwordBuffer[passwordLength] = {};
+	char usernameBuffer[usernameLength] = {'\0'};
+	char passwordBuffer[passwordLength] = {'\0'};
 	int input = 0;
 	switch ((input = _getch()))
 	{
@@ -202,6 +206,7 @@ void WelcomWindow(SOCKET ClientSocket)
 }
 void LobbyWindow(SOCKET ClientSocket)
 {
+	lastRxPkt->Print();
 	cout << "Logged in as " << currentUser.username << endl<<endl;
 	cout << "Chatrooms:" << endl;
 	for (int i = 0; i < chatroomList.size(); i++)
@@ -222,6 +227,7 @@ void LobbyWindow(SOCKET ClientSocket)
 	cout << endl<<"Sign out";
 	if (cursor == chatroomList.size() + 2)
 		cout << "<";
+	cout << endl;
 	int input = 0;
 	switch ((input = _getch()))
 	{
@@ -245,8 +251,10 @@ void LobbyWindow(SOCKET ClientSocket)
 				string roomNameBuff;
 				cout << "enter room name:";
 				getline(cin, roomNameBuff);
+				char roomName[chatroomNameSize] = { 0 };
+				strncpy_s(roomName, roomNameBuff.c_str(), roomNameBuff.size());
 				if (roomNameBuff.size() > 0)
-					CreateChatroom(ClientSocket, currentUser.username, roomNameBuff.c_str());
+					CreateChatroom(ClientSocket, currentUser.username, roomName);
 			}
 			else if (cursor == chatroomList.size()+1)
 			{
@@ -259,12 +267,12 @@ void LobbyWindow(SOCKET ClientSocket)
 			//sign out
 			else if (cursor == chatroomList.size() + 2)
 			{
-				long idBuff;
-				cout << "enter room id:";
-				cin >> idBuff;
-				if (idBuff > 0)
-					JoinChatroom(ClientSocket, idBuff);
+				RegisterLogin(ClientSocket, currentUser.username, currentUser.password, 2);
 				cursor = 0;
+				currentUser = {0};
+				chatroomList.clear();
+				chatroomMemberMap.clear();
+				chatroomMessageMap.clear();
 				currentState = ClientState::Welcome;
 			}
 			break;
@@ -295,6 +303,7 @@ void SendChatMessage(SOCKET socket, char* username, long chatroomID, const char*
 }
 void ChatroomWindow(SOCKET ClientSocket)
 {
+	lastRxPkt->Print();
 	cout << "Chatroom:" << currentChatroom.chatroomName<<" #"<<currentChatroom.chatroomID << endl << endl;
 	cout << "Members:" << endl;
 	for (int i = 0; i < chatroomMemberMap[currentChatroom.chatroomID].size(); i++)
@@ -337,12 +346,6 @@ void ClientStateMachine(SOCKET ClientSocket)
 		{
 		case ClientState::Welcome:
 
-			//{
-			//	strncpy_s(currentUser, usernameBuffer, usernameLength);
-			//	currentState = Lobby;
-			//	recvResponse(ClientSocket);
-			//	//
-			//}
 			WelcomWindow(ClientSocket);
 			break;
 		case ClientState::Lobby:

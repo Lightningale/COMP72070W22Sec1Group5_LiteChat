@@ -39,6 +39,6 @@ public:
 	{
 		cout << "Packet type:" << head.type << endl;
 		cout << "Response:" << headerData.response << endl;
-
+		cout << "Packet num:" << headerData.packetNum << endl;
 	}
 };
