@@ -1,7 +1,7 @@
 #include "LoginScreen.h"
 #include "CreateAccount.h"
 #include "stdafx.h"
-#include <QtWidgets/QApplication>
+#include <QtWidgets>
 #include <QStackedWidget>
 
 int main(int argc, char *argv[])

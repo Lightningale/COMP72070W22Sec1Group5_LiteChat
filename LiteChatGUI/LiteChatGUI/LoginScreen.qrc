@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="LoginScreen"/>
   <qresource prefix="Background">
+    <file>../Content/sendMesIcon.png</file>
+    <file>../Content/sendImageIcon.png</file>
     <file>../Content/CreateAccountScreen.png</file>
     <file>../Content/Group 16.png</file>
     <file>../Content/LoginScreen.png</file>

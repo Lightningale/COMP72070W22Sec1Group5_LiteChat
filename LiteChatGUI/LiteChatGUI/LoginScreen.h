@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets>
 #include "ui_LoginScreen.h"
 #include <string>
 
