@@ -36,9 +36,3 @@ FOREIGN KEY (`username`) REFERENCES `Users` (`username`)
 
 GRANT SELECT, INSERT, CREATE, DROP ON `LiteChat`.* TO connector@localhost;
 SHOW GRANTS for connector@localhost;
-INSERT INTO Users VALUES('geyang',"geyangpassword");
-INSERT INTO Users VALUES('shane',"shanepassword");
-select * from chatrooms;
-select * from roomMembers;
-INSERT INTO Messages SET roomID=(SELECT roomID from Chatrooms WHERE roomID=1),username=(SELECT username FROM Users WHERE username='geyang'),timestamp=FROM_UNIXTIME(1508240128),message='random message here';
-select * from messages;
