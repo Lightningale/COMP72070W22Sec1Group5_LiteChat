@@ -321,7 +321,10 @@ void ChatroomWindow(SOCKET ClientSocket)
 	cout << "----------------------" << endl;
 	cout << "Enter message:(enter exit to leave,just click enter to refresh)" << endl;
 	string input;
+	char message[messageLength] = { 0 };
+	
 	getline(cin, input);
+	strncpy_s(message, input.c_str(), input.size());
 	if (strncmp(input.c_str(), "exit", 4) == 0)
 	{
 		currentState = ClientState::Lobby;
@@ -333,7 +336,7 @@ void ChatroomWindow(SOCKET ClientSocket)
 	}
 	else
 	{
-		SendChatMessage(ClientSocket, currentUser.username, currentChatroom.chatroomID, input.c_str());
+		SendChatMessage(ClientSocket, currentUser.username, currentChatroom.chatroomID, message);
 	}
 }
 

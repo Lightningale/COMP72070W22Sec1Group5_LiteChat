@@ -282,7 +282,13 @@ void JoinChatroom(SOCKET socket, long chatroomID)
 //store a message into the chatroom message table in database
 void StoreMessage(MessagePacket msgPkt)
 {
-
+	MessageData msgBuf = msgPkt.GetMessageData();
+	statement = connection->createStatement();
+	//sql::SQLString query = "INSERT INTO Messages SET roomID=(SELECT roomID from Chatrooms WHERE roomID=" + to_string(msgBuf.chatroomID) + "),username=(SELECT username FROM Users WHERE username='" + string(msgBuf.username, usernameLength) + "'),timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message, messageLength) + "';";
+	sql::SQLString query = "INSERT INTO Messages SET roomID=" + to_string(msgBuf.chatroomID) + ",username='" + string(msgBuf.username, usernameLength) + "',timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message) + "';";
+	cout << query << endl;
+	statement->execute(query);
+	//statement->execute("INSERT INTO Messages(roomID, username, timestamp, message) VALUES (" + to_string(msgBuf.chatroomID)+",'"+msgBuf.username+"',FROM_UNIXTIME("+to_string(msgBuf.timestamp)+"),'"+msgBuf.message+"');");
 }
 //send a message to every connected socket where the logged in user is in the chatroom
 void RelayMessage(SOCKET socket, MessagePacket msgPkt)
@@ -294,7 +300,33 @@ void RelayMessage(SOCKET socket, MessagePacket msgPkt)
 	memcpy(TxBuffer + sizeof(HeaderPacket), &msgBuf, sizeof(MessageData));
 	//msgPkt.GetSerializedData(TxBuffer+sizeof(HeaderPacket));
 	msgPkt.Print();
-	send(socket, TxBuffer, sizeof(TxBuffer), 0);
+	
+	
+	//send(socket, TxBuffer, sizeof(TxBuffer), 0);
+
+
+	statement = connection->createStatement();
+	statement->execute("USE " + database_name);
+	//result = statement->executeQuery("SELECT Users.* FROM RoomMembers INNER JOIN Users ON RoomMembers.username = Users.username WHERE RoomMembers.roomID = '" + to_string(msgBuf.chatroomID) + "'");
+	result = statement->executeQuery("SELECT * FROM RoomMembers WHERE roomID = '" + to_string(msgBuf.chatroomID) + "'");
+	while (result->next())
+	{
+		string tempusername = string(result->getString("username"));
+		//char usernameBuff[usernameLength] = { 0 };
+		//strncpy_s(usernameBuff, tempusername.c_str(), tempusername.size());
+		//tempusername = string(usernameBuff);
+		//cout << "found user " << tempusername << endl;
+		if (userSocketMap.count(tempusername))
+		{
+
+				send(userSocketMap.find(tempusername)->second, TxBuffer, sizeof(TxBuffer), 0);
+				//cout << "RelayMessage sent " + string(actData.username, usernameLength) + " in chatroom #" + to_string(chatroomID) + " to " + tempusername + " ON " + to_string(userSocketMap.find(tempusername)->second) + " FROM + " << thisSocket << endl;
+		}
+	}
+
+	delete header;
+	delete result;
+	delete statement;
 }
 
 
