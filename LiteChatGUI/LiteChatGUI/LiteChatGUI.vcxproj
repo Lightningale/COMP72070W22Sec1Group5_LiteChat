@@ -100,10 +100,12 @@
     <QtUic Include="CreateAccount.ui" />
     <QtUic Include="LoginScreen.ui" />
     <QtMoc Include="LoginScreen.h" />
+    <ClCompile Include="CreateAccount.cpp" />
     <ClCompile Include="LoginScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="LiteChatGUI.ico" />
     <ResourceCompile Include="LiteChatGUI.rc" />
+    <QtMoc Include="CreateAccount.h" />
     <ClInclude Include="stdafx.h" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
