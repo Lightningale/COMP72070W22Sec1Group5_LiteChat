@@ -35,6 +35,7 @@ FOREIGN KEY (`username`) REFERENCES `Users` (`username`)
 )ENGINE=InnoDB;
 
 
-
+DROP USER connector@localhost;
+CREATE USER connector@localhost IDENTIFIED BY 'connectorPassword';
 GRANT SELECT, INSERT, CREATE, DROP ON `LiteChat`.* TO connector@localhost;
 SHOW GRANTS for connector@localhost;
