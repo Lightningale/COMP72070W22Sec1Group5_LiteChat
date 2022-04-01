@@ -100,6 +100,8 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="windowInit.cpp" />
+    <QtMoc Include="windowInit.h" />
     <QtRcc Include="LoginScreen.qrc" />
     <QtUic Include="ChatScreen.ui" />
     <QtUic Include="CreateAccount.ui" />
@@ -109,6 +111,7 @@
     <ClCompile Include="CreateAccount.cpp" />
     <ClCompile Include="LoginScreen.cpp" />
     <ClCompile Include="main.cpp" />
+    <None Include="cpp.hint" />
     <None Include="LiteChatGUI.ico" />
     <ResourceCompile Include="LiteChatGUI.rc" />
     <QtMoc Include="CreateAccount.h" />

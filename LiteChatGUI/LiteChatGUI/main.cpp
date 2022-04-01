@@ -1,19 +1,13 @@
-#include "LoginScreen.h"
-#include "CreateAccount.h"
+#include "windowInit.h"
 #include "stdafx.h"
 #include <QtWidgets>
-#include <QStackedWidget>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    LoginScreen w;
-    CreateAccount c;
+    windowInit w;
+    w.setFixedSize(1280, 720);
     w.show();
-
-    // swtches screens in the same window
-    // have to use this cus all screens are MainWindows
-    //w.setCentralWidget(c.centralWidget());
 
     return a.exec();
 }
