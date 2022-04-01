@@ -27,6 +27,8 @@ CREATE TABLE `Messages`(
 `roomID` INT NOT NULL,
 `username` varchar(20) NOT NULL,
 `timestamp` DATETIME NOT NULL,
+`hasimage` BOOL,
+`imagePath` varchar(50),
 `message` varchar(200),
 FOREIGN KEY (`roomID`) REFERENCES `Chatrooms` (`roomID`) ON DELETE CASCADE,
 FOREIGN KEY (`username`) REFERENCES `Users` (`username`)

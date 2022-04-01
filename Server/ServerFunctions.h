@@ -92,6 +92,7 @@ void sendChatroomInfo(SOCKET socket, long chatroomID)
 		strncpy_s(temp.username, result->getString("username").c_str(), usernameLength);
 		strncpy_s(temp.message, result->getString("message").c_str(), messageLength);
 		temp.chatroomID = result->getInt("roomID");
+		temp.hasImage = result->getBoolean("hasImage");
 		temp.timestamp = static_cast<time_t>(result->getInt("timestamp"));
 		//strncpy(temp.password)
 		messageList.push_back(temp);
@@ -285,7 +286,7 @@ void StoreMessage(MessagePacket msgPkt)
 	MessageData msgBuf = msgPkt.GetMessageData();
 	statement = connection->createStatement();
 	//sql::SQLString query = "INSERT INTO Messages SET roomID=(SELECT roomID from Chatrooms WHERE roomID=" + to_string(msgBuf.chatroomID) + "),username=(SELECT username FROM Users WHERE username='" + string(msgBuf.username, usernameLength) + "'),timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message, messageLength) + "';";
-	sql::SQLString query = "INSERT INTO Messages SET roomID=" + to_string(msgBuf.chatroomID) + ",username='" + string(msgBuf.username, usernameLength) + "',timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message) + "';";
+	sql::SQLString query = "INSERT INTO Messages SET hasImage="+to_string(msgBuf.hasImage)+",roomID=" + to_string(msgBuf.chatroomID) + ",username='" + string(msgBuf.username, usernameLength) + "',timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message) + "';";
 	cout << query << endl;
 	statement->execute(query);
 	//statement->execute("INSERT INTO Messages(roomID, username, timestamp, message) VALUES (" + to_string(msgBuf.chatroomID)+",'"+msgBuf.username+"',FROM_UNIXTIME("+to_string(msgBuf.timestamp)+"),'"+msgBuf.message+"');");

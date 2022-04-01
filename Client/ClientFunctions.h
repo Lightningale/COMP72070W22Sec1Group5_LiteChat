@@ -294,7 +294,7 @@ void SendChatMessage(SOCKET socket, char* username, long chatroomID, const char*
 {
 	char TxBuffer[1024] = {};
 
-	Packet* pkt = new MessagePacket(typeMessage, chatroomID, username, message);
+	Packet* pkt = new MessagePacket(typeMessage, chatroomID, username, message,false);
 	//memcpy(TxBuffer, pkt->GetType(), typeNameSize);
 	pkt->GetSerializedData(TxBuffer);
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);

@@ -13,6 +13,7 @@ const int chatroomIDSize = 20;
 const int chatroomNameSize = 20;
 const int messageLength = 200;
 const int responseSize = 20;
+const int pathSize = 50;
 const char typeAccount[typeNameSize] = "Account";
 const char typeChatroom[typeNameSize] = "Chatroom";
 const char typeMessage[typeNameSize] = "Message";

@@ -7,6 +7,8 @@ struct MessageData
 	char username[usernameLength];
 	long chatroomID;
 	char message[messageLength];
+	bool hasImage;
+	char imagePath[pathSize];
 	time_t timestamp;
 };
 class MessagePacket :public Packet
@@ -19,7 +21,7 @@ public:
 		memcpy(&head, src, sizeof(Header));
 		memcpy(&messageData, src + sizeof(Header), sizeof(MessageData));
 	}
-	MessagePacket(const char* actionType, const long chatroomID, const char* username,const char* message)
+	MessagePacket(const char* actionType, const long chatroomID, const char* username,const char* message,bool hasImage)
 	{
 		//memcpy(messageData.actionType, actionType, typeNameSize);
 		memcpy(messageData.username, username, usernameLength);
@@ -28,6 +30,7 @@ public:
 		messageData.timestamp = head.timestamp;
 		this->SetHeader(typeMessage,actionType);
 		head.size += sizeof(MessageData);
+		messageData.hasImage = hasImage;
 	}
 	//serialize object and store in buffer
 	void GetSerializedData(char* buffer)
