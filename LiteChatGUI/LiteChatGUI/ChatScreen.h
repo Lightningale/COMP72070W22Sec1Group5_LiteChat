@@ -11,19 +11,12 @@ class ChatScreen : public QMainWindow
 public:
     ChatScreen(QWidget* parent = Q_NULLPTR);
 
+
 public slots:
    
 
     // display message on chat screen
     void sender_message() {
-        ui.RMessage1->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage2->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage3->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage4->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage5->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage6->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage7->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
-        ui.RMessage8->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
 
         message = ui.messageBox->toPlainText();
 
