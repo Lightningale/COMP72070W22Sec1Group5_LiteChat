@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <thread>
+#include "Send.h"
 //#include "Packets.h"
 #include "ClientFunctions.h"
 #define _CRT_SECURE_NO_WARNINGS
