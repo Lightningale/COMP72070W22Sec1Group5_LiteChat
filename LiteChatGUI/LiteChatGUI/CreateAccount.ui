@@ -392,6 +392,25 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="accountCreatedLabel">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>600</y>
+      <width>221</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff7f;&quot;&gt;Account creation successful!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::NoTextInteraction</set>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources>

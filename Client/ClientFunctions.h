@@ -6,6 +6,10 @@
 #include <map>
 #include <string>
 //Client
+
+SOCKET ClientSocket;
+bool clientRunning = true;
+
 enum class ClientState { Welcome, Lobby, Chatroom };
 ClientState currentState;
 //current user and chatroom
@@ -16,7 +20,7 @@ vector<ChatroomData> chatroomList;
 //
 map<long, vector<AccountData>> chatroomMemberMap;
 map<long, vector<MessageData>> chatroomMessageMap;
-int cursor;
+int cursorC;
 int errorFlag=0;
 HeaderPacket* lastRxPkt=new HeaderPacket("",0);
 void DisplayError()
@@ -74,7 +78,7 @@ void recvResponse(SOCKET socket)
 				errorFlag = 0;
 				AccountPacket accountBuffer(RxBuffer + sizeof(HeaderPacket));
 				currentUser = accountBuffer.GetAccountData();
-				cursor = 0;
+				cursorC = 0;
 				currentState = ClientState::Lobby;
 			}
 			//received list of chatroom data
@@ -176,8 +180,8 @@ void LeaveChatroom(SOCKET socket, long roomID)
 void WelcomWindow(SOCKET ClientSocket)
 {
 	lastRxPkt->Print();
-	cout << "Register"; if (cursor == 0) { cout << "<";}cout << endl;
-	cout << "Login"; if (cursor == 1) { cout << "<"; }cout << endl;
+	cout << "Register"; if (cursorC == 0) { cout << "<";}cout << endl;
+	cout << "Login"; if (cursorC == 1) { cout << "<"; }cout << endl;
 	DisplayError();
 
 	char usernameBuffer[usernameLength] = {'\0'};
@@ -186,19 +190,19 @@ void WelcomWindow(SOCKET ClientSocket)
 	switch ((input = _getch()))
 	{
 	case 72://key up
-		if (cursor > 0)
-			cursor--;
+		if (cursorC > 0)
+			cursorC--;
 		break;
 	case 80://key down
-		if (cursor < 1)
-			cursor++;
+		if (cursorC < 1)
+			cursorC++;
 		break;
 	case '\r'://enter
 		cout << "Enter username:";
 		cin >> usernameBuffer;
 		cout << "Enter password:";
 		cin >> passwordBuffer;
-		RegisterLogin(ClientSocket, usernameBuffer, passwordBuffer, cursor);
+		RegisterLogin(ClientSocket, usernameBuffer, passwordBuffer, cursorC);
 		break;
 	}
 	
@@ -212,41 +216,41 @@ void LobbyWindow(SOCKET ClientSocket)
 	for (int i = 0; i < chatroomList.size(); i++)
 	{
 		cout << chatroomList[i].chatroomName;
-		if (cursor == i)
+		if (cursorC == i)
 			cout << " <";
 		cout << endl;
 	}
 	cout << "------------------------------" << endl;
 	DisplayError();
 	cout << "CreateChatroom";
-	if (cursor == chatroomList.size())
+	if (cursorC == chatroomList.size())
 		cout << "<";
 	cout << endl << "JoinChatroom";
-	if (cursor == chatroomList.size()+1)
+	if (cursorC == chatroomList.size()+1)
 		cout << "<";
 	cout << endl<<"Sign out";
-	if (cursor == chatroomList.size() + 2)
+	if (cursorC == chatroomList.size() + 2)
 		cout << "<";
 	cout << endl;
 	int input = 0;
 	switch ((input = _getch()))
 	{
 		case 72://key up
-			if (cursor > 0)
-				cursor--;
+			if (cursorC > 0)
+				cursorC--;
 			break;
 		case 80://key down
-			if (cursor < chatroomList.size()+2)
-				cursor++;
+			if (cursorC < chatroomList.size()+2)
+				cursorC++;
 			break;
 		case '\r'://enter
-			if (cursor >= 0 && cursor < chatroomList.size())
+			if (cursorC >= 0 && cursorC < chatroomList.size())
 			{
-				currentChatroom = chatroomList[cursor];
-				cursor = 0;
+				currentChatroom = chatroomList[cursorC];
+				cursorC = 0;
 				currentState = ClientState::Chatroom;
 			}
-			else if (cursor == chatroomList.size())
+			else if (cursorC == chatroomList.size())
 			{
 				string roomNameBuff;
 				cout << "enter room name:";
@@ -256,7 +260,7 @@ void LobbyWindow(SOCKET ClientSocket)
 				if (roomNameBuff.size() > 0)
 					CreateChatroom(ClientSocket, currentUser.username, roomName);
 			}
-			else if (cursor == chatroomList.size()+1)
+			else if (cursorC == chatroomList.size()+1)
 			{
 				long idBuff;
 				cout << "enter room id:";
@@ -265,10 +269,10 @@ void LobbyWindow(SOCKET ClientSocket)
 					JoinChatroom(ClientSocket, idBuff);
 			}
 			//sign out
-			else if (cursor == chatroomList.size() + 2)
+			else if (cursorC == chatroomList.size() + 2)
 			{
 				RegisterLogin(ClientSocket, currentUser.username, currentUser.password, 2);
-				cursor = 0;
+				cursorC = 0;
 				currentUser = {0};
 				chatroomList.clear();
 				chatroomMemberMap.clear();
@@ -328,7 +332,7 @@ void ChatroomWindow(SOCKET ClientSocket)
 	if (strncmp(input.c_str(), "exit", 4) == 0)
 	{
 		currentState = ClientState::Lobby;
-		cursor = 0;
+		cursorC = 0;
 	}
 	else if (input.length() == 0)
 	{
@@ -344,7 +348,6 @@ void ClientStateMachine(SOCKET ClientSocket)
 {
 	while (1)
 	{
-
 		switch (currentState)
 		{
 		case ClientState::Welcome:
@@ -360,8 +363,7 @@ void ClientStateMachine(SOCKET ClientSocket)
 		case ClientState::Chatroom:
 			ChatroomWindow(ClientSocket);
 			break;
-		default:
-			break;
+		
 		}
 		system("CLS");
 	}

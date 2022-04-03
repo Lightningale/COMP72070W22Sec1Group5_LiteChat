@@ -25,7 +25,7 @@ int main()
 	}
 
 	//initializes socket. SOCK_STREAM: TCP
-	SOCKET ClientSocket;
+	ClientSocket;
 	ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (ClientSocket == INVALID_SOCKET) {
 		WSACleanup();
@@ -46,13 +46,14 @@ int main()
 	currentState = ClientState::Welcome;
 	char usernameBuffer[usernameLength] = {};
 	char passwordBuffer[passwordLength] = {};
-	cursor = 0;
+	cursorC = 0;
 	errorFlag = 0;
 	thread UIthread(ClientStateMachine, ClientSocket);
 	thread ReceivingThread(recvResponse, ClientSocket);
 
 	UIthread.join();
 	ReceivingThread.join();
+
 	//closes connection and socket
 	closesocket(ClientSocket);
 

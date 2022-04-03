@@ -7,14 +7,14 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     windowInit w;
-    ChatScreen chat;
-    //w.setFixedSize(1280, 720);
-    chat.resize(1280, 720);
- /*   w.show();*/
-
+    w.setFixedSize(1280, 720);
+    w.show();
+    
     // testing chat
     //ChatScreen chat;
-    chat.show();
+    // // chat.resize(1280, 720);
+    //chat.show();
 
     return a.exec();
+    //return 1;
 }

@@ -6,7 +6,4 @@ LoginScreen::LoginScreen(QWidget *parent)
 {
     ui.setupUi(this);
     ui.loginError->setVisible(false);
-
-    //QString username = ui.usernameBox->toPlainText();
-    //QString password = ui.passwordBox->text();
 }
