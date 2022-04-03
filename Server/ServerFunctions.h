@@ -7,7 +7,14 @@
 #include <map>
 #include <ctime>
 map<SOCKET,string> socketUserMap;
+//print the connected users and their sockets from this
 map<string, SOCKET> userSocketMap;
+//to get current server state, call stateNames[currentState];
+enum ServerState{Waiting,Idle,Receiving,Writing,Sending}currentServerState;
+string stateNames[5] = { "Waiting","Idle","Receiving","Writing","Sending" };
+//print server log from this vector
+vector<string>serverLog;
+vector<Packet>packetLog;
 string trim(const std::string& str, const std::string& whitespace = " \t\f\n\r\v")
 {
 	const auto strBegin = str.find_first_not_of(whitespace);
@@ -92,7 +99,7 @@ void sendChatroomInfo(SOCKET socket, long chatroomID)
 		strncpy_s(temp.username, result->getString("username").c_str(), usernameLength);
 		strncpy_s(temp.message, result->getString("message").c_str(), messageLength);
 		temp.chatroomID = result->getInt("roomID");
-		temp.hasImage = result->getBoolean("hasImage");
+		temp.hasImage = false;
 		temp.timestamp = static_cast<time_t>(result->getInt("timestamp"));
 		//strncpy(temp.password)
 		messageList.push_back(temp);
@@ -286,7 +293,7 @@ void StoreMessage(MessagePacket msgPkt)
 	MessageData msgBuf = msgPkt.GetMessageData();
 	statement = connection->createStatement();
 	//sql::SQLString query = "INSERT INTO Messages SET roomID=(SELECT roomID from Chatrooms WHERE roomID=" + to_string(msgBuf.chatroomID) + "),username=(SELECT username FROM Users WHERE username='" + string(msgBuf.username, usernameLength) + "'),timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message, messageLength) + "';";
-	sql::SQLString query = "INSERT INTO Messages SET hasImage="+to_string(msgBuf.hasImage)+",roomID=" + to_string(msgBuf.chatroomID) + ",username='" + string(msgBuf.username, usernameLength) + "',timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message) + "';";
+	sql::SQLString query = "INSERT INTO Messages SET hasImage="+to_string(false)+",roomID=" + to_string(msgBuf.chatroomID) + ",username='" + string(msgBuf.username, usernameLength) + "',timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message) + "';";
 	cout << query << endl;
 	statement->execute(query);
 	//statement->execute("INSERT INTO Messages(roomID, username, timestamp, message) VALUES (" + to_string(msgBuf.chatroomID)+",'"+msgBuf.username+"',FROM_UNIXTIME("+to_string(msgBuf.timestamp)+"),'"+msgBuf.message+"');");
@@ -378,6 +385,7 @@ bool VerifyLogin( SOCKET socket,const char* username, const char* password)
 		userSocketMap.insert(pair<string, SOCKET>(tempname, socket));
 		delete statement;
 		delete result;
+
 		return true;
 	}
 	delete statement;
@@ -393,7 +401,7 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		return false;
 	//cout << RxBuffer << endl;
 	memcpy(RxPacketType, RxBuffer, typeNameSize);
-
+	
 	//handle register and login requests
 	if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
 	{
@@ -403,6 +411,7 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
 		AccountPacket rxPkt(Buffer);
 		rxPkt.Print();
+		packetLog.push_back(rxPkt);
 		//register
 		if (strncmp(rxPkt.GetAction(), actionRegister, typeNameSize) == 0)
 		{
@@ -445,6 +454,7 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		memcpy(Buffer, RxBuffer, sizeof(ChatroomPacket));
 		ChatroomPacket rxRoomPkt(Buffer);
 		//rxRoomPkt.Print();
+		 packetLog.push_back(rxRoomPkt);
 		//new room
 		if (strncmp(rxRoomPkt.GetAction(), actionNewChatroom, typeNameSize) == 0)
 		{
@@ -471,6 +481,7 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		char Buffer[sizeof(MessagePacket)] = {};
 		memcpy(Buffer, RxBuffer, sizeof(MessagePacket));
 		MessagePacket rxMsgPkt(Buffer);
+		packetLog.push_back(rxMsgPkt);
 		//rxMsgPkt.Print();
 		StoreMessage(rxMsgPkt);
 		RelayMessage(ConnectionSocket, rxMsgPkt);
