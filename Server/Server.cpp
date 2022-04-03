@@ -14,7 +14,7 @@ int main()
 	// Start connection with SQL database
 	sql::Connection* DBconnection;
 	DBconnection = DB_CONNECT();
-
+	string newLog;
 
 	//starts Winsock DLLs		
 	WSADATA wsaData;
@@ -69,8 +69,9 @@ int main()
 	
 
 
-	cout << "Waiting for client connections\n" << endl;
-
+	//cout << "Waiting for client connections\n" << endl;
+	serverLog.push_back(string("Waiting for client connections\n"));
+	cout << serverLog[serverLog.size() - 1];
 	/// <summary>
 	/// new code
 	/// </summary>
@@ -126,8 +127,9 @@ int main()
 			}
 
 			//inform user of socket number - used in send and receive commands 
-			printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(SvrAddr.sin_addr) , ntohs(SvrAddr.sin_port));
-
+			//printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(SvrAddr.sin_addr) , ntohs(SvrAddr.sin_port));
+			serverLog.push_back(string("New connection , socket fd is ")+to_string(new_socket)+string(" ,ip is: ")+ inet_ntoa(SvrAddr.sin_addr)+string(",port: ")+to_string(ntohs(SvrAddr.sin_port))+"\n");
+			cout << serverLog[serverLog.size() - 1];
 			//send new connection greeting message 
 			//if (send(new_socket, message, strlen(message), 0) != strlen(message))
 		//	{
@@ -143,7 +145,7 @@ int main()
 				if (ClientSocket[i] == 0)
 				{
 					ClientSocket[i] = new_socket;
-					printf("Adding to list of sockets as %d\n", i);
+					//printf("Adding to list of sockets as %d\n", i);
 
 					break;
 				}
@@ -163,9 +165,9 @@ int main()
 				{
 					//Somebody disconnected , get his details and print 
 					getpeername(sd, (struct sockaddr*)&SvrAddr,(int *)&addrlen);
-					printf("Host disconnected , ip %s , port %d \n",
-						inet_ntoa(SvrAddr.sin_addr), ntohs(SvrAddr.sin_port));
-					
+					//printf("Host disconnected , ip %s , port %d \n",inet_ntoa(SvrAddr.sin_addr), ntohs(SvrAddr.sin_port));
+					serverLog.push_back(string("Host disconnected , ip:")+ inet_ntoa(SvrAddr.sin_addr) + string(",port: ")+ to_string(ntohs(SvrAddr.sin_port)) + "\n");
+					cout << serverLog[serverLog.size() - 1];
 					userSocketMap.erase(socketUserMap.find(sd)->second);
 					socketUserMap.erase(sd);
 					//Close the socket and mark as 0 in list for reuse 
