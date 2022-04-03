@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="database.h" />
     <ClInclude Include="ServerFunctions.h" />
+    <ClInclude Include="ServerSend.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

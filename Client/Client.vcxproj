@@ -149,6 +149,7 @@
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Packets.h" />
     <ClInclude Include="HeaderPacket.h" />
+    <ClInclude Include="Send.h" />
     <ClInclude Include="ServerFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
