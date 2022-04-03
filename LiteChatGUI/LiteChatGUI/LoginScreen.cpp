@@ -6,4 +6,5 @@ LoginScreen::LoginScreen(QWidget *parent)
 {
     ui.setupUi(this);
     ui.loginError->setVisible(false);
+    ui.loginLabel->setVisible(false);
 }

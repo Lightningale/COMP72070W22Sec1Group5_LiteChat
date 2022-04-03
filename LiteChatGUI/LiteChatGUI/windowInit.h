@@ -5,6 +5,7 @@
 #include "CreateAccount.h"
 #include "LoginScreen.h"
 #include "ChatScreen.h"
+#include "Packet.h"
 
 class windowInit : public QMainWindow
 {
@@ -43,6 +44,6 @@ public slots:
     void receive_messages();
 private:
     QStackedWidget* screens;
-    char* uConv;    // stores user's username
-    char* pConv;    // stores user's password
+    char username[usernameLength] = { '\0' };   // stores username
+    char password[passwordLength] = { '\0' };   // stores password
 };

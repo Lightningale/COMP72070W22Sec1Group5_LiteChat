@@ -16,10 +16,7 @@ windowInit::windowInit(QWidget* parent)
     setCentralWidget(screens);
 
     /////////////////////////////////////////////////////////////////////
-    
-    
-    
-
+    // 
     // button connects
     // login page
     connect(l.ui.loginButton, SIGNAL(clicked()), this, SLOT(on_loginButton_clicked()));
@@ -43,12 +40,6 @@ windowInit::windowInit(QWidget* parent)
     createClientConn();
 }
 
-//void openGUI()
-//{
-//    windowInit w;
-//    w.setFixedSize(1280, 720);
-//    w.show();
-//}
 
 int windowInit::createClientConn()
 {
@@ -79,7 +70,7 @@ int windowInit::createClientConn()
     ///////////////////////////////////
     currentState = ClientState::Welcome;
     cursorC = 0;
-    errorFlag = 0;
+    //errorFlag = 0;
     //::thread UIthread(openGUI);
     ::thread ReceivingThread(recvResponse, ClientSocket);
 
@@ -95,26 +86,31 @@ int windowInit::createClientConn()
 // login screen buttons
 void windowInit::on_loginButton_clicked()
 {
+    // get input from text fields
     // check if login details are correct here
     // stores user input from text field and converts to a char array
-    QString username = l.ui.usernameBox->toPlainText();
-    QByteArray u = username.toLocal8Bit();
-    uConv = u.data();
+    QString user = l.ui.usernameBox->toPlainText();
+    QByteArray u = user.toLocal8Bit();
+    strcpy(username, u.data());
 
-    QString password = l.ui.passwordBox->text();
-    QByteArray p = password.toLocal8Bit();
-    pConv = p.data();
+    QString pass = l.ui.passwordBox->text();
+    QByteArray p = pass.toLocal8Bit();
+    strcpy(password, p.data());
 
-    RegisterLogin(ClientSocket, uConv, pConv, 1);
+    RegisterLogin(ClientSocket, username, password, 1);
 
     // if the username or password are incorrect
         // make loginError labelvisible
-    if (errorFlag == 1 && currentState  == ClientState::Welcome)
+    if (errorFlag == 1)
     {
         l.ui.loginError->setVisible(true);
     }
-    else if(errorFlag == 0 && currentState == ClientState::Welcome)
+    else if(errorFlag == 0)
     {
+        l.ui.loginLabel->setVisible(true);
+        
+        ::this_thread::sleep_for(::chrono::milliseconds(2000));   // sleep in case the thread needs to populate the next page
+
         // when the login information is correct the chatroom window will be populated based on the logged in user
         currentState = ClientState::Lobby;
 
@@ -144,6 +140,7 @@ void windowInit::on_loginButton_clicked()
 
         screens->setCurrentIndex(2);
     }
+    l.update();
 }
 
 void windowInit::on_createButton_clicked()
@@ -186,29 +183,33 @@ void windowInit::on_backButton_clicked()
 
 void windowInit::on_createAccButton_clicked()
 {
-    // get input from text fields
-    QString username = c.ui.usernameBox->toPlainText();
-    QByteArray u = username.toLocal8Bit();
-    char* createUser = u.data();
+    char createUser[usernameLength] = { '\0' };
+    char createPass[passwordLength] = { '\0' };
 
-    QString password = c.ui.passwordBox_2->text();
-    QByteArray p = password.toLocal8Bit();
-    char* createPass = p.data();
+    // get input from text fields
+    QString user = c.ui.usernameBox->toPlainText();
+    QByteArray u = user.toLocal8Bit();
+    strcpy(createUser, u.data());
+
+    QString pass = c.ui.passwordBox_2->text();
+    QByteArray p = pass.toLocal8Bit();
+    strcpy(createPass, p.data());
 
     // send to server to check
     RegisterLogin(ClientSocket, createUser, createPass, 0);
     // server returns something
 
-    if (errorFlag == 1 && currentState == ClientState::Welcome)         // if the username is taken
+    if (errorFlag == 1)         // if the username is taken
     {
         c.ui.loginError->setVisible(true);
+        c.ui.accountCreatedLabel->setVisible(false);
     }
-    else if (errorFlag == 0 && currentState == ClientState::Welcome)        // if the account creation is successful -> should save to database
+    else if (errorFlag == 0)        // if the account creation is successful -> should save to database
     {
         c.ui.loginError->setVisible(false);
         c.ui.accountCreatedLabel->setVisible(true);
     }
-
+    c.update();
 }
 
 
@@ -217,8 +218,17 @@ void windowInit::on_logoutButton_clicked()
 {
     // return to login screen
     // log user out
-    RegisterLogin(ClientSocket, uConv, pConv, 3);
+    l.ui.loginLabel->setVisible(false);
+    RegisterLogin(ClientSocket, username, password, 3);
     screens->setCurrentIndex(0);
+
+    // clear screens
+    s.ui.noRoom->setVisible(false);
+    s.ui.chatroomName->setVisible(false);
+    s.ui.chatroomID->setVisible(false);
+    s.ui.chatroomIDLabel->setVisible(false);
+    s.ui.RecvMsgBox->setVisible(false);
+    s.ui.RecvMsgSendButton->setVisible(false);
 }
 
 void windowInit::on_searchButton_clicked()

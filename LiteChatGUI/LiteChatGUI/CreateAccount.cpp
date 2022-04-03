@@ -7,5 +7,4 @@ CreateAccount::CreateAccount(QWidget* parent)
     ui.setupUi(this);
     ui.loginError->setVisible(false);
     ui.accountCreatedLabel->setVisible(false);
-    
 }
