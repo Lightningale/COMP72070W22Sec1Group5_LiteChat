@@ -45,9 +45,11 @@ public slots:
     void receive_messages();
     void populateChatroomList();
     void populateChatroomMembers();
+    void populateChatroomIDList();
     void displayChatroomMessages();
     void clearChatroomList();
     void clearMemberList();
+    void clearChatIDList();
     void clearChatSide();
 
 private:

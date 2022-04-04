@@ -35,8 +35,11 @@ windowInit::windowInit(QWidget* parent)
     connect(s.ui.RecvMsgSendButton, SIGNAL(clicked()), this, SLOT(receive_messages()));
     connect(s.ui.leaveRoomButton, SIGNAL(clicked()), this, SLOT(on_leaveRoomButton_clicked()));
 
-    //connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(()));
+    //connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(on_sendButton_clicked()));
     //connect(s.ui.sendImage, SIGNAL(clicked()), this, SLOT(()));
+
+
+
 
     createClientConn();
 }
@@ -81,7 +84,6 @@ int windowInit::createClientConn()
    // ReceivingThread.join();
 
     ReceivingThread.detach();
-
 }
 
 
@@ -116,6 +118,7 @@ void windowInit::on_loginButton_clicked()
         // pre-reset in case of dupes
         clearChatroomList();
         clearMemberList();
+        clearChatIDList();
         clearChatSide();
 
         ::this_thread::sleep_for(::chrono::milliseconds(2000));   // sleep in case the thread needs to populate the next page
@@ -128,6 +131,7 @@ void windowInit::on_loginButton_clicked()
 
         // populate chatroom list
         populateChatroomList();
+        populateChatroomIDList();
 
         // clear boxes
         l.ui.loginError->setVisible(false);
@@ -225,6 +229,8 @@ void windowInit::on_logoutButton_clicked()
 
     clearChatroomList();
     clearMemberList();
+    clearChatIDList();
+
     s.ui.messageBox->clear();
 
 }
@@ -232,7 +238,7 @@ void windowInit::on_logoutButton_clicked()
 void windowInit::on_searchButton_clicked()
 {
     QString search = s.ui.userSearch->toPlainText();
-    chatroomRn = search.toLong();
+    chatroomRn = search.toLong() - 1;
 
     JoinChatroom(ClientSocket, chatroomRn);
 
@@ -245,9 +251,11 @@ void windowInit::on_searchButton_clicked()
     {
         currentState = ClientState::Chatroom;
         // pre clear list
+        clearChatIDList();
         clearChatroomList();
         clearMemberList();
         // display room members
+        populateChatroomIDList();
         populateChatroomList();
         populateChatroomMembers();
         //displayChatroomMessages();
@@ -279,6 +287,7 @@ void windowInit::on_createChatroomButton_clicked()
         strcpy(newRoom, "Chatroom" + chatroomList.size());
 
     CreateChatroom(ClientSocket, username, newRoom);
+    populateChatroomIDList();
     populateChatroomList();
 
     s.ui.newChatroomName->clear();
@@ -293,7 +302,7 @@ void windowInit::on_sendButton_clicked()
     QByteArray m = rawMsg.toLocal8Bit();
     strcpy(msg, m.data());
 
-    SendChatMessage(ClientSocket, currentUser.username, currentChatroom.chatroomID, msg);
+    SendChatMessage(ClientSocket, username, chatroomRn, msg);
 
     s.ui.messageBox->clear();
 }
@@ -627,7 +636,7 @@ void windowInit::receive_messages()
 
 void windowInit::populateChatroomList()
 {
-    s.ui.listofchatrooms->clear();
+    clearChatroomList();
     for (int i = 0; i < chatroomList.size(); i++)
     {
         s.ui.listofchatrooms->addItem(chatroomList[i].chatroomName);
@@ -637,10 +646,21 @@ void windowInit::populateChatroomList()
 
 void windowInit::populateChatroomMembers()
 {
-    s.ui.memberList->clear();
+    clearMemberList();
     for (int i = 0; i < chatroomMessageMap[chatroomRn].size(); i++)
     {
         s.ui.memberList->addItem(chatroomMemberMap[chatroomRn][i].username);
+    }
+    s.update();
+}
+
+void windowInit::populateChatroomIDList()
+{
+    s.ui.listofroomid->clear();
+    for (int i = 0; i < chatroomList.size(); i++)
+    {
+        QString roomID = QString::number(chatroomList[i].chatroomID);
+        s.ui.listofroomid->addItem(roomID);
     }
     s.update();
 }
@@ -669,6 +689,18 @@ void windowInit::clearMemberList()
     while (items > 0)
     {
         s.ui.memberList->takeItem(items);
+        items--;
+    }
+    s.update();
+}
+
+void windowInit::clearChatIDList()
+{
+    int items = s.ui.listofroomid->count();
+
+    while (items > 0)
+    {
+        s.ui.listofroomid->takeItem(items);
         items--;
     }
     s.update();

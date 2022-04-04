@@ -106,7 +106,7 @@ font: 14pt &quot;Lucida Sans&quot;;</string>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>70</x>
       <y>180</y>
       <width>131</width>
       <height>471</height>
@@ -886,6 +886,10 @@ color: rgb(255, 255, 255);</string>
      </property>
      <item row="4" column="0">
       <widget class="QPushButton" name="LMessage5">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -893,6 +897,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="1" column="0">
       <widget class="QPushButton" name="LMessage2">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -900,6 +908,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="6" column="1">
       <widget class="QPushButton" name="RMessage7">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -913,6 +925,10 @@ color: rgb(255, 255, 255);</string>
          <height>16777215</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -920,6 +936,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="2" column="1">
       <widget class="QPushButton" name="RMessage3">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -927,6 +947,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="6" column="0">
       <widget class="QPushButton" name="LMessage7">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -949,6 +973,10 @@ color: rgb(255, 255, 255);</string>
          <height>16777215</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -956,6 +984,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="4" column="1">
       <widget class="QPushButton" name="RMessage5">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -963,6 +995,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="1" column="1">
       <widget class="QPushButton" name="RMessage2">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -970,6 +1006,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="2" column="0">
       <widget class="QPushButton" name="LMessage3">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -977,6 +1017,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="5" column="0">
       <widget class="QPushButton" name="LMessage6">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -984,6 +1028,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="3" column="1">
       <widget class="QPushButton" name="RMessage4">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -991,6 +1039,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="3" column="0">
       <widget class="QPushButton" name="LMessage4">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -998,6 +1050,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="7" column="0">
       <widget class="QPushButton" name="LMessage8">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -1005,6 +1061,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="7" column="1">
       <widget class="QPushButton" name="RMessage8">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -1012,6 +1072,10 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item row="5" column="1">
       <widget class="QPushButton" name="RMessage6">
+       <property name="styleSheet">
+        <string notr="true">font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(255,255,255);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -1193,12 +1257,15 @@ color: rgb(255, 255, 255);</string>
      <rect>
       <x>100</x>
       <y>125</y>
-      <width>161</width>
+      <width>171</width>
       <height>21</height>
      </rect>
     </property>
     <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 12pt &quot;Lucida Sans&quot;;</string>
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;No existing chatroom&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1347,7 +1414,7 @@ color: rgb(255, 255, 255);</string>
      <string notr="true">background-color: rgb(42, 49, 51);</string>
     </property>
     <property name="text">
-     <string>Search</string>
+     <string>Join</string>
     </property>
     <property name="flat">
      <bool>false</bool>
@@ -1356,7 +1423,7 @@ color: rgb(255, 255, 255);</string>
    <widget class="QLabel" name="chatroomName">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>465</x>
       <y>35</y>
       <width>441</width>
       <height>21</height>
@@ -1373,7 +1440,7 @@ color: rgb(255, 255, 255);</string>
    <widget class="QLabel" name="chatroomIDLabel">
     <property name="geometry">
      <rect>
-      <x>1100</x>
+      <x>1070</x>
       <y>35</y>
       <width>101</width>
       <height>21</height>
@@ -1390,7 +1457,7 @@ font: 12pt &quot;Lucida Sans&quot;;</string>
    <widget class="QLabel" name="chatroomID">
     <property name="geometry">
      <rect>
-      <x>1205</x>
+      <x>1180</x>
       <y>35</y>
       <width>51</width>
       <height>21</height>
@@ -1408,7 +1475,7 @@ font: 12pt &quot;Lucida Sans&quot;;</string>
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>678</y>
+      <y>675</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -1635,9 +1702,9 @@ color: rgb(255, 255, 255);</string>
    <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>220</x>
       <y>180</y>
-      <width>131</width>
+      <width>121</width>
       <height>471</height>
      </rect>
     </property>
@@ -1662,7 +1729,7 @@ color: rgb(255, 255, 255);</string>
    <widget class="QLabel" name="chatroomList">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>95</x>
       <y>150</y>
       <width>81</width>
       <height>21</height>
@@ -1684,7 +1751,7 @@ color: rgb(255, 255, 255);</string>
    <widget class="QLabel" name="membersLabel">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>245</x>
       <y>150</y>
       <width>81</width>
       <height>21</height>
@@ -1707,7 +1774,7 @@ color: rgb(255, 255, 255);</string>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>680</y>
+      <y>678</y>
       <width>171</width>
       <height>25</height>
      </rect>
@@ -1869,6 +1936,78 @@ color: rgb(255, 255, 255);</string>
     </property>
     <property name="flat">
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="chatroomList_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>150</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Lucida Sans</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>180</y>
+      <width>41</width>
+      <height>471</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QListWidget" name="listofroomid">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgba(255, 255, 255, 0);
+font: 12pt &quot;Lucida Sans&quot;;
+color: rgb(255, 255, 255);
+</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::DoubleClicked</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>165</y>
+      <width>341</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
   </widget>
