@@ -2,7 +2,6 @@
 #include "CppUnitTest.h"
 #include "../Client/ClientFunctions.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using Moq;
 namespace LiteChatTests
 {
 	TEST_CLASS(ClientTests)

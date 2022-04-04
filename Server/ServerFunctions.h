@@ -28,6 +28,7 @@ string trim(const std::string& str, const std::string& whitespace = " \t\f\n\r\v
 }
 void sendFailResponse(SOCKET socket, const char* failmsg)
 {
+	currentServerState = ServerState::Sending;
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(failmsg, 0);
 	//pkt->GetSerializedData(TxBuffer + typeNameSize);
@@ -35,9 +36,11 @@ void sendFailResponse(SOCKET socket, const char* failmsg)
 	//send string over socket
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);
 	delete pkt;
+	currentServerState = ServerState::Waiting;
 }
 void sendLogin(SOCKET socket, AccountPacket account)
 {
+	currentServerState = ServerState::Sending;
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(respLoginSuccess, 1);
 
@@ -48,9 +51,11 @@ void sendLogin(SOCKET socket, AccountPacket account)
 	//send string over socket
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);
 	delete pkt;
+	currentServerState = ServerState::Waiting;
 }
 void sendLogout(SOCKET socket, AccountPacket account)
 {
+	currentServerState = ServerState::Sending;
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(respLogoutSuccess, 1);
 
@@ -61,10 +66,12 @@ void sendLogout(SOCKET socket, AccountPacket account)
 	//send string over socket
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);
 	delete pkt;
+	currentServerState = ServerState::Waiting;
 }
 //send the member and message data of a chatroom
 void sendChatroomInfo(SOCKET socket, long chatroomID)
 {
+	currentServerState = ServerState::Sending;
 	//member data in database. replace this with data retrieved from database
 	vector<AccountData> memberList;
 	statement = connection->createStatement();
@@ -114,6 +121,7 @@ void sendChatroomInfo(SOCKET socket, long chatroomID)
 	}
 	send(socket, TxBuffer, sizeof(TxBuffer), 0);
 	delete pkt;
+	currentServerState = ServerState::Waiting;
 }
 
 //send a list of all chatrooms the user is in
@@ -150,12 +158,13 @@ void sendChatroomList(SOCKET socket, const char* username)
 	{
 		sendChatroomInfo(socket, chatroomList[i].chatroomID);
 	}
+	currentServerState = ServerState::Waiting;
 }
 //send a newly joined member to all active users
 void RelayMember(SOCKET thisSocket,AccountData actData, long chatroomID)
 {
-
-	cout << "Relay Member activated" << endl;
+	currentServerState = ServerState::Sending;
+	/*cout << "Relay Member activated" << endl;
 	cout << "user socket map:";
 	for (auto it = userSocketMap.cbegin(); it != userSocketMap.cend(); ++it)
 	{
@@ -166,7 +175,7 @@ void RelayMember(SOCKET thisSocket,AccountData actData, long chatroomID)
 	{
 		cout << it->second << "," << it->first << ";";
 	}
-	cout << endl;
+	cout << endl;*/
 	char TxBuffer[1024] = {};
 	Packet* pkt = new HeaderPacket(respMemberList, 1);
 	pkt->GetSerializedData(TxBuffer);
@@ -183,13 +192,13 @@ void RelayMember(SOCKET thisSocket,AccountData actData, long chatroomID)
 		//char usernameBuff[usernameLength] = { 0 };
 		//strncpy_s(usernameBuff, tempusername.c_str(), tempusername.size());
 		//tempusername = string(usernameBuff);
-		cout << "found user " << tempusername<<endl;
+		//cout << "found user " << tempusername<<endl;
 		if (userSocketMap.count(tempusername)) 
 		{
 			if (userSocketMap.find(tempusername)->second != thisSocket)
 			{
 				send(userSocketMap.find(tempusername)->second, TxBuffer, sizeof(TxBuffer), 0);
-				cout << "RelayMember sent " + string(actData.username, usernameLength) + " in chatroom #" + to_string(chatroomID) + " to " + tempusername + " ON " + to_string(userSocketMap.find(tempusername)->second)+" FROM + "<<thisSocket << endl;
+				//cout << "RelayMember sent " + string(actData.username, usernameLength) + " in chatroom #" + to_string(chatroomID) + " to " + tempusername + " ON " + to_string(userSocketMap.find(tempusername)->second)+" FROM + "<<thisSocket << endl;
 			}
 		}
 	}
@@ -197,6 +206,7 @@ void RelayMember(SOCKET thisSocket,AccountData actData, long chatroomID)
 	delete pkt;
 	delete result;
 	delete statement;
+	currentServerState = ServerState::Waiting;
 }
 
 //create a new chatroom in database and store data in dest.
@@ -204,14 +214,14 @@ void CreateChatroom(SOCKET socket, const char* chatroomName, const char* usernam
 {
 
 	//create a room entry in database and store data here
-
+	currentServerState = ServerState::Writing;
 	statement = connection->createStatement();
 	statement->execute("USE " + database_name);
 	string sqlbuff = "'" + string(chatroomName,chatroomNameSize) + "', " + "'" + string(username, usernameLength) + "'" + ");";
 	sql::SQLString query = sqlbuff;
 	//statement->execute("INSERT INTO Chatrooms(name, owner) VALUES (" + query);
 	string debug = string(chatroomName, chatroomNameSize);
-	cout << "Create chatroom:'" << debug <<"', owner:'"<< string(username, usernameLength)<<"'"<< endl;
+	//cout << "Create chatroom:'" << debug <<"', owner:'"<< string(username, usernameLength)<<"'"<< endl;
 	statement->execute("INSERT INTO Chatrooms SET name='" + debug + "',owner=(SELECT username FROM Users WHERE username='" + string(username, usernameLength) + "');");
 	//
 	result = statement->executeQuery("SELECT * FROM Chatrooms Where owner= '" + string(username, usernameLength) + "' ORDER BY roomID DESC;");
@@ -221,6 +231,7 @@ void CreateChatroom(SOCKET socket, const char* chatroomName, const char* usernam
 		memcpy(roomData.chatroomName, result->getString("name").c_str(), chatroomNameSize);
 		memcpy(roomData.owner, result->getString("owner").c_str(), usernameLength);
 		roomData.chatroomID = result->getInt("roomID");
+		serverLog.push_back(string(socketUserMap.find(socket)->second + " created chatroom #") + to_string(roomData.chatroomID) + "\n");
 		//statement->execute("INSERT INTO RoomMembers(roomID,username) Values(" + to_string(roomData.chatroomID) + "," + string(username, usernameLength) + "');");
 		statement->execute("INSERT INTO RoomMembers SET roomID=(SELECT roomID from Chatrooms WHERE roomID="+to_string(roomData.chatroomID)+"),username=(SELECT username FROM Users WHERE username='"+roomData.owner+"');");
 		char TxBuffer[1024] = {};
@@ -232,12 +243,14 @@ void CreateChatroom(SOCKET socket, const char* chatroomName, const char* usernam
 	}
 	delete statement;
 	delete result;
+	currentServerState = ServerState::Waiting;
 	//ChatroomData mockRoom = { "testCreateRoom","someUser",10000 + rand() };
 	
 }
 //return false if no matching chatroom found, otherwise store chatroom data in dest
 void JoinChatroom(SOCKET socket, long chatroomID)
 {
+	currentServerState = ServerState::Writing;
 	statement = connection->createStatement();
 	statement->execute("USE " + database_name);
 
@@ -249,6 +262,8 @@ void JoinChatroom(SOCKET socket, long chatroomID)
 		strncpy_s(roomData.chatroomName, result->getString("name").c_str(), chatroomNameSize);
 		strncpy_s(roomData.owner, result->getString("owner").c_str(), usernameLength);
 		roomData.chatroomID = result->getInt("roomID");
+
+		serverLog.push_back(string(socketUserMap.find(socket)->second+" Joined chatroom #") + to_string(chatroomID) + "\n");
 		//check if user already exists in room
 		result= statement->executeQuery("SELECT * FROM RoomMembers WHERE roomID = " + to_string(chatroomID) + " AND username='" + socketUserMap.find(socket)->second+"';");
 		if (result->rowsCount() == 0)
@@ -278,6 +293,7 @@ void JoinChatroom(SOCKET socket, long chatroomID)
 			RelayMember(socket,newMember, chatroomID);
 
 		}
+		currentServerState = ServerState::Waiting;
 	}
 	else
 	{
@@ -290,24 +306,27 @@ void JoinChatroom(SOCKET socket, long chatroomID)
 //store a message into the chatroom message table in database
 void StoreMessage(MessagePacket msgPkt)
 {
+	currentServerState = ServerState::Writing;
 	MessageData msgBuf = msgPkt.GetMessageData();
 	statement = connection->createStatement();
 	//sql::SQLString query = "INSERT INTO Messages SET roomID=(SELECT roomID from Chatrooms WHERE roomID=" + to_string(msgBuf.chatroomID) + "),username=(SELECT username FROM Users WHERE username='" + string(msgBuf.username, usernameLength) + "'),timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message, messageLength) + "';";
 	sql::SQLString query = "INSERT INTO Messages SET hasImage="+to_string(false)+",roomID=" + to_string(msgBuf.chatroomID) + ",username='" + string(msgBuf.username, usernameLength) + "',timestamp=FROM_UNIXTIME(" + to_string(msgBuf.timestamp) + "),message='" + string(msgBuf.message) + "';";
-	cout << query << endl;
+	//cout << query << endl;
 	statement->execute(query);
+	currentServerState = ServerState::Waiting;
 	//statement->execute("INSERT INTO Messages(roomID, username, timestamp, message) VALUES (" + to_string(msgBuf.chatroomID)+",'"+msgBuf.username+"',FROM_UNIXTIME("+to_string(msgBuf.timestamp)+"),'"+msgBuf.message+"');");
 }
 //send a message to every connected socket where the logged in user is in the chatroom
 void RelayMessage(SOCKET socket, MessagePacket msgPkt)
 {
+	currentServerState = ServerState::Sending;
 	char TxBuffer[1024] = {};
 	Packet* header = new HeaderPacket(respMessageList, 1);
 	header->GetSerializedData(TxBuffer);
 	MessageData msgBuf = msgPkt.GetMessageData();
 	memcpy(TxBuffer + sizeof(HeaderPacket), &msgBuf, sizeof(MessageData));
 	//msgPkt.GetSerializedData(TxBuffer+sizeof(HeaderPacket));
-	msgPkt.Print();
+	//msgPkt.Print();
 	
 	
 	//send(socket, TxBuffer, sizeof(TxBuffer), 0);
@@ -320,6 +339,7 @@ void RelayMessage(SOCKET socket, MessagePacket msgPkt)
 	while (result->next())
 	{
 		string tempusername = string(result->getString("username"));
+		
 		//char usernameBuff[usernameLength] = { 0 };
 		//strncpy_s(usernameBuff, tempusername.c_str(), tempusername.size());
 		//tempusername = string(usernameBuff);
@@ -335,6 +355,7 @@ void RelayMessage(SOCKET socket, MessagePacket msgPkt)
 	delete header;
 	delete result;
 	delete statement;
+	currentServerState = ServerState::Waiting;
 }
 
 
@@ -346,7 +367,7 @@ bool VerifyRegister(SOCKET socket,const char* username, const char* password)
 	result = statement->executeQuery("SELECT username FROM Users WHERE username = '"+string(username,usernameLength)+"'");
 	if (result->rowsCount() >0)
 	{
-		cout << "username "<<username<<" already exists" << endl;
+		//cout << "username "<<username<<" already exists" << endl;
 		delete statement;
 		delete result;
 		return false;
@@ -366,6 +387,7 @@ bool VerifyRegister(SOCKET socket,const char* username, const char* password)
 		string tempname = result->getString("username");
 		socketUserMap.insert(pair<SOCKET, string>(socket, tempname));
 		userSocketMap.insert(pair<string, SOCKET>(tempname, socket));
+		serverLog.push_back(tempname + " Registered"+ "\n");
 		delete statement;
 		delete result;
 		return true;
@@ -385,7 +407,7 @@ bool VerifyLogin( SOCKET socket,const char* username, const char* password)
 		userSocketMap.insert(pair<string, SOCKET>(tempname, socket));
 		delete statement;
 		delete result;
-
+		serverLog.push_back(string(tempname+ " Logged in")  + "\n");
 		return true;
 	}
 	delete statement;
@@ -395,6 +417,8 @@ bool VerifyLogin( SOCKET socket,const char* username, const char* password)
 
 bool RecvClientPacket(SOCKET ConnectionSocket)
 {
+	
+	currentServerState = ServerState::Receiving;
 	char RxBuffer[1024] = {};
 	char RxPacketType[typeNameSize] = {};
 	if (recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0) <= 0)
@@ -407,11 +431,13 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 	{
 		//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
 		//rxPkt->Print();
+		
 		char Buffer[sizeof(AccountPacket)] = {};
 		memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
 		AccountPacket rxPkt(Buffer);
-		rxPkt.Print();
-		packetLog.push_back(rxPkt);
+		//rxPkt.Print();
+		//packetLog.push_back(rxPkt);
+
 		//register
 		if (strncmp(rxPkt.GetAction(), actionRegister, typeNameSize) == 0)
 		{
@@ -441,9 +467,10 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		//logout
 		else if (strncmp(rxPkt.GetAction(), actionLogout, typeNameSize) == 0)
 		{
+			serverLog.push_back(string(socketUserMap.find(ConnectionSocket)->second) + " signed out" + "\n");
 			userSocketMap.erase(socketUserMap.find(ConnectionSocket)->second);
 			socketUserMap.erase(ConnectionSocket);
-
+			
 		}
 
 	}
@@ -454,17 +481,17 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		memcpy(Buffer, RxBuffer, sizeof(ChatroomPacket));
 		ChatroomPacket rxRoomPkt(Buffer);
 		//rxRoomPkt.Print();
-		 packetLog.push_back(rxRoomPkt);
+		 //packetLog.push_back(rxRoomPkt);
 		//new room
 		if (strncmp(rxRoomPkt.GetAction(), actionNewChatroom, typeNameSize) == 0)
 		{
-			rxRoomPkt.Print();
+			//rxRoomPkt.Print();
 			CreateChatroom(ConnectionSocket, rxRoomPkt.GetChatroomName(), rxRoomPkt.GetOwnerName());
 		}
 		//join room
 		if (strncmp(rxRoomPkt.GetAction(), actionJoinChatroom, typeNameSize) == 0)
 		{
-			rxRoomPkt.Print();
+			//rxRoomPkt.Print();
 			JoinChatroom(ConnectionSocket, rxRoomPkt.GetChatroomID());
 		}
 		//leave room
@@ -481,11 +508,43 @@ bool RecvClientPacket(SOCKET ConnectionSocket)
 		char Buffer[sizeof(MessagePacket)] = {};
 		memcpy(Buffer, RxBuffer, sizeof(MessagePacket));
 		MessagePacket rxMsgPkt(Buffer);
-		packetLog.push_back(rxMsgPkt);
+		//packetLog.push_back(rxMsgPkt);
 		//rxMsgPkt.Print();
+		serverLog.push_back(string(socketUserMap.find(ConnectionSocket)->second + " Posted in chatroom #" + to_string(rxMsgPkt.getChatroomID()) + "\n"));
 		StoreMessage(rxMsgPkt);
 		RelayMessage(ConnectionSocket, rxMsgPkt);
 	}
 	return true;
+}
+void ServerDisplay()
+{
+	system("CLS");
+	std::cout << "Server State:" << stateNames[currentServerState]<<endl<<endl;
+	std::cout << "Connected Users:";
+	/*map<string, SOCKET>::iterator itr;
+	for (itr = userSocketMap.begin(); itr != userSocketMap.end(); ++itr)
+	{
+		printf("%s", itr->first);
+	}
+	cout << endl;
+	cout << "Socket:";
+	for (itr = userSocketMap.begin(); itr != userSocketMap.end(); ++itr)
+	{
+		printf("%15d", itr->second);
+	}*/
 
+	for (auto it = userSocketMap.cbegin(); it != userSocketMap.cend(); ++it)
+	{
+		std::cout << it->first <<" ";
+	}
+	std::cout << endl;
+	std::cout << "Socket:";
+	for (auto it = userSocketMap.cbegin(); it != userSocketMap.cend(); ++it)
+	{
+		std::cout <<it->second << " ";
+	}
+	std::cout << endl<<endl;
+	std::cout << "Server Log:" << endl;
+	for (int i = 0; i < serverLog.size(); i++)
+		std::cout << serverLog[i];
 }

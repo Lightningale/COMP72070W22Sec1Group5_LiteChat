@@ -6,7 +6,7 @@
 #include <ctime>
 using namespace std;
 const int EmptyPktSize = 6;					//Number of data bytes in a packet with no data field
-const int usernameLength = 20;
+const int usernameLength = 15;
 const int passwordLength = 20;
 const int typeNameSize = 10;
 const int chatroomIDSize = 20;

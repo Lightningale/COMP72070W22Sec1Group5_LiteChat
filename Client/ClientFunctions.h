@@ -178,7 +178,7 @@ void LeaveChatroom(SOCKET socket, long roomID)
 
 void WelcomWindow(SOCKET ClientSocket)
 {
-	lastRxPkt->Print();
+	//lastRxPkt->Print();
 	cout << "Register"; if (cursorC == 0) { cout << "<";}cout << endl;
 	cout << "Login"; if (cursorC == 1) { cout << "<"; }cout << endl;
 	DisplayError();
@@ -209,7 +209,7 @@ void WelcomWindow(SOCKET ClientSocket)
 }
 void LobbyWindow(SOCKET ClientSocket)
 {
-	lastRxPkt->Print();
+	//lastRxPkt->Print();
 	cout << "Logged in as " << currentUser.username << endl<<endl;
 	cout << "Chatrooms:" << endl;
 	for (int i = 0; i < chatroomList.size(); i++)
@@ -306,7 +306,7 @@ void SendChatMessage(SOCKET socket, char* username, long chatroomID, const char*
 }
 void ChatroomWindow(SOCKET ClientSocket)
 {
-	lastRxPkt->Print();
+	//lastRxPkt->Print();
 	cout << "Chatroom:" << currentChatroom.chatroomName<<" #"<<currentChatroom.chatroomID << endl << endl;
 	cout << "Members:" << endl;
 	for (int i = 0; i < chatroomMemberMap[currentChatroom.chatroomID].size(); i++)

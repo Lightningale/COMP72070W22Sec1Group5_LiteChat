@@ -71,13 +71,15 @@ int main()
 
 	//cout << "Waiting for client connections\n" << endl;
 	serverLog.push_back(string("Waiting for client connections\n"));
-	cout << serverLog[serverLog.size() - 1];
+	currentServerState = ServerState::Idle;
+	//cout << serverLog[serverLog.size() - 1];
 	/// <summary>
 	/// new code
 	/// </summary>
 	/// <returns></returns>
 	while (1)
 	{
+		ServerDisplay();
 		//clear the socket set 
 		FD_ZERO(&readFDS);
 
@@ -129,7 +131,8 @@ int main()
 			//inform user of socket number - used in send and receive commands 
 			//printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(SvrAddr.sin_addr) , ntohs(SvrAddr.sin_port));
 			serverLog.push_back(string("New connection , socket fd is ")+to_string(new_socket)+string(" ,ip is: ")+ inet_ntoa(SvrAddr.sin_addr)+string(",port: ")+to_string(ntohs(SvrAddr.sin_port))+"\n");
-			cout << serverLog[serverLog.size() - 1];
+			//cout << serverLog[serverLog.size() - 1];
+			currentServerState = ServerState::Waiting;
 			//send new connection greeting message 
 			//if (send(new_socket, message, strlen(message), 0) != strlen(message))
 		//	{
@@ -167,7 +170,7 @@ int main()
 					getpeername(sd, (struct sockaddr*)&SvrAddr,(int *)&addrlen);
 					//printf("Host disconnected , ip %s , port %d \n",inet_ntoa(SvrAddr.sin_addr), ntohs(SvrAddr.sin_port));
 					serverLog.push_back(string("Host disconnected , ip:")+ inet_ntoa(SvrAddr.sin_addr) + string(",port: ")+ to_string(ntohs(SvrAddr.sin_port)) + "\n");
-					cout << serverLog[serverLog.size() - 1];
+					//cout << serverLog[serverLog.size() - 1];
 					userSocketMap.erase(socketUserMap.find(sd)->second);
 					socketUserMap.erase(sd);
 					//Close the socket and mark as 0 in list for reuse 
@@ -178,91 +181,7 @@ int main()
 			}
 		}
 	}
-	/////////////////////////////////////Old Code////////////////////////////////////
-
-	/*//accepts a connection from a client
-	SOCKET ConnectionSocket;
-	ConnectionSocket = SOCKET_ERROR;
-	if ((ConnectionSocket = accept(ServerSocket, NULL, NULL)) == SOCKET_ERROR) {
-		closesocket(ServerSocket);
-		WSACleanup();
-		return 0;
-	}
-
-	cout << "Connection Established" << endl;
-	/////////////////////////////////////////
-	// 
 	
-	
-	char RxBuffer[1024] = {};
-	char RxPacketType[typeNameSize] = {};
-	while (1)
-
-	{
-		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-		//cout << RxBuffer << endl;
-		memcpy(RxPacketType, RxBuffer, typeNameSize);
-
-		//received register and login
-		if (memcmp(RxPacketType, typeAccount, typeNameSize) == 0)
-		{
-			//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
-			//rxPkt->Print();
-			char Buffer[sizeof(AccountPacket)] = {};
-			memcpy(Buffer, RxBuffer, sizeof(AccountPacket));
-			AccountPacket rxPkt(Buffer);
-			rxPkt.Print();
-			if (VerifyLogin(rxPkt.GetUsername(), rxPkt.GetPassword()))
-			{
-				sendLogin(ConnectionSocket, rxPkt);
-				sendChatroomList(ConnectionSocket, rxPkt.GetUsername());
-			}
-			else
-			{
-				sendFailResponse(ConnectionSocket, respLoginFail);
-			}
-		}
-		//received chatroom request
-		else if (memcmp(RxPacketType, typeChatroom, typeNameSize) == 0)
-		{
-			char Buffer[sizeof(ChatroomPacket)] = {};
-			memcpy(Buffer, RxBuffer, sizeof(ChatroomPacket));
-			ChatroomPacket rxRoomPkt(Buffer);
-			//rxRoomPkt.Print();
-			//new room
-			if (strncmp(rxRoomPkt.GetAction(), actionNewChatroom, typeNameSize) == 0)
-			{
-				rxRoomPkt.Print();
-				CreateChatroom(ConnectionSocket, rxRoomPkt.GetChatroomName(),rxRoomPkt.GetOwnerName());
-			}
-			//join room
-			if (strncmp(rxRoomPkt.GetAction(), actionJoinChatroom, typeNameSize) == 0)
-			{
-				rxRoomPkt.Print();
-				JoinChatroom(ConnectionSocket, rxRoomPkt.GetChatroomID());
-			}
-			//leave room
-			if (strncmp(rxRoomPkt.GetAction(), actionLeaveChatroom, typeNameSize) == 0)
-			{
-
-			}
-		}
-		//received chat message
-		else if (memcmp(RxPacketType, typeMessage, typeNameSize) == 0)
-		{
-			//rxPkt = new AccountPacket(RxBuffer + typeNameSize);
-			//rxPkt->Print();
-			char Buffer[sizeof(MessagePacket)] = {};
-			memcpy(Buffer, RxBuffer, sizeof(MessagePacket));
-			MessagePacket rxMsgPkt(Buffer);
-			//rxMsgPkt.Print();
-			StoreMessage(rxMsgPkt);
-			RelayMessage(ConnectionSocket, rxMsgPkt);
-		}
-	}*/
-	//
-
-
 
 
 
