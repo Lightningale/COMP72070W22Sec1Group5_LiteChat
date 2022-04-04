@@ -33,6 +33,7 @@ windowInit::windowInit(QWidget* parent)
     connect(s.ui.createChatroomButton, SIGNAL(clicked()), this, SLOT(on_createChatroomButton_clicked()));
     connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(sender_messages()));
     connect(s.ui.RecvMsgSendButton, SIGNAL(clicked()), this, SLOT(receive_messages()));
+    connect(s.ui.leaveRoomButton, SIGNAL(clicked()), this, SLOT(on_leaveRoomButton_clicked()));
 
     //connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(()));
     //connect(s.ui.sendImage, SIGNAL(clicked()), this, SLOT(()));
@@ -115,6 +116,7 @@ void windowInit::on_loginButton_clicked()
         // pre-reset in case of dupes
         clearChatroomList();
         clearMemberList();
+        clearChatSide();
 
         ::this_thread::sleep_for(::chrono::milliseconds(2000));   // sleep in case the thread needs to populate the next page
 
@@ -123,19 +125,6 @@ void windowInit::on_loginButton_clicked()
 
         // populate next chatroom window
         s.ui.clientUser->setText(u);
-
-        // get chatrooms list
-        string chatList = "";
-
-        for (int i = 0; i < chatroomList.size(); i++)
-        {
-            chatList = chatList.append(::to_string(chatroomList[i].chatroomID));
-            chatList = chatList.append(" - ");
-            chatList = chatList.append(chatroomList[i].chatroomName);
-            chatList = chatList.append("\n");
-        }
-
-        QString CL = QString::fromStdString(chatList);
 
         // populate chatroom list
         populateChatroomList();
@@ -165,7 +154,6 @@ void windowInit::on_createButton_clicked()
 void windowInit::on_exitButton_clicked()
 {
     // close window
-    clientRunning = false;
     //closes connection and socket
     closesocket(ClientSocket);
 
@@ -223,6 +211,7 @@ void windowInit::on_createAccButton_clicked()
 // chat screen
 void windowInit::on_logoutButton_clicked()
 {
+    currentState = ClientState::Welcome;
     // return to login screen
     // log user out
     l.ui.loginLabel->setVisible(false);
@@ -232,12 +221,7 @@ void windowInit::on_logoutButton_clicked()
 
 
     // clear screens
-    s.ui.noRoom->setVisible(false);
-    s.ui.chatroomName->setVisible(false);
-    s.ui.chatroomID->setVisible(false);
-    s.ui.chatroomIDLabel->setVisible(false);
-    s.ui.RecvMsgBox->setVisible(false);
-    s.ui.RecvMsgSendButton->setVisible(false);
+    clearChatSide();
 
     clearChatroomList();
     clearMemberList();
@@ -253,12 +237,13 @@ void windowInit::on_searchButton_clicked()
     JoinChatroom(ClientSocket, chatroomRn);
 
 
-    if (errorFlag == 3 && (currentState == ClientState::Lobby || currentState == ClientState::Chatroom))
+    if (errorFlag == 3 && (currentState == ClientState::Lobby))
     {
-        c.ui.loginError->setVisible(true);
+        s.ui.noRoom->setVisible(true);
     }
-    else if (errorFlag == 0)
+    else if (errorFlag == 0 && (currentState == ClientState::Lobby))
     {
+        currentState = ClientState::Chatroom;
         // pre clear list
         clearChatroomList();
         clearMemberList();
@@ -274,6 +259,7 @@ void windowInit::on_searchButton_clicked()
         s.ui.chatroomName->setVisible(true);
         s.ui.chatroomID->setVisible(true);
         s.ui.chatroomIDLabel->setVisible(true);
+        s.ui.leaveRoomButton->setVisible(true);
     }
 
     s.ui.userSearch->clear();
@@ -317,6 +303,13 @@ void windowInit::on_sendImage_clicked()
     // send image
     // prompt user to upload pic from library
     // OR use the directory in the chat bar to search for image
+}
+
+void windowInit::on_leaveRoomButton_clicked()
+{
+    currentState = ClientState::Lobby;
+    clearChatSide();
+    clearMemberList();
 }
 
 
@@ -666,6 +659,7 @@ void windowInit::clearChatroomList()
         s.ui.listofchatrooms->takeItem(items);
         items--;
     }
+    s.update();
 }
 
 void windowInit::clearMemberList()
@@ -677,4 +671,19 @@ void windowInit::clearMemberList()
         s.ui.memberList->takeItem(items);
         items--;
     }
+    s.update();
+}
+
+void windowInit::clearChatSide()
+{
+    // everything on the right side is invisible at startup -> they will become visible when the user enters in a valid chatroom
+    s.ui.noRoom->setVisible(false);
+    s.ui.chatroomName->setVisible(false);
+    s.ui.chatroomID->setVisible(false);
+    s.ui.chatroomIDLabel->setVisible(false);
+    s.ui.RecvMsgBox->setVisible(false);
+    s.ui.RecvMsgSendButton->setVisible(false);
+    s.ui.leaveRoomButton->setVisible(false);
+
+    // make chat boxes invis + clear
 }

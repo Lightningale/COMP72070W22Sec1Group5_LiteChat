@@ -8,7 +8,6 @@
 //Client
 
 SOCKET ClientSocket;
-bool clientRunning = true;
 
 enum class ClientState { Welcome, Lobby, Chatroom };
 ClientState currentState;

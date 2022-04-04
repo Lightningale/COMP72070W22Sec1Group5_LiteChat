@@ -37,6 +37,7 @@ public slots:
     void on_createChatroomButton_clicked();
     void on_sendButton_clicked();
     void on_sendImage_clicked();
+    void on_leaveRoomButton_clicked();
 
 
     // chat screen managing
@@ -47,6 +48,7 @@ public slots:
     void displayChatroomMessages();
     void clearChatroomList();
     void clearMemberList();
+    void clearChatSide();
 
 private:
     QStackedWidget* screens;

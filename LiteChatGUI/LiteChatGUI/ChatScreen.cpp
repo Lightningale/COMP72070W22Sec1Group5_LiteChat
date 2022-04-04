@@ -6,14 +6,6 @@ ChatScreen::ChatScreen(QWidget* parent)
 {
     ui.setupUi(this);
 
-    // everything on the right side is invisible at startup -> they will become visible when the user enters in a valid chatroom
-    ui.noRoom->setVisible(false);
-    ui.chatroomName->setVisible(false);
-    ui.chatroomID->setVisible(false);
-    ui.chatroomIDLabel->setVisible(false);
-    ui.RecvMsgBox->setVisible(false);
-    ui.RecvMsgSendButton->setVisible(false);
-
     // Set all the right side text message boxes transparent 
     ui.RMessage1->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
     ui.RMessage2->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
