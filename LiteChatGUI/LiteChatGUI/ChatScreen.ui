@@ -61,7 +61,7 @@
      <cursorShape>IBeamCursor</cursorShape>
     </property>
     <property name="placeholderText">
-     <string>Search for chatrooms...</string>
+     <string>Join a chatroom...</string>
     </property>
    </widget>
    <widget class="QTextEdit" name="messageBox">
@@ -108,27 +108,17 @@ font: 14pt &quot;Lucida Sans&quot;;</string>
      <rect>
       <x>40</x>
       <y>180</y>
-      <width>151</width>
+      <width>131</width>
       <height>471</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="listofchatrooms">
-       <property name="font">
-        <font>
-         <family>Lucida Sans</family>
-         <pointsize>10</pointsize>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
+      <widget class="QListWidget" name="listofchatrooms">
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);
-font: 10pt &quot;Lucida Sans&quot;;</string>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string notr="true">background-color: rgba(255, 255, 255, 0);
+font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(0, 0, 0);</string>
        </property>
       </widget>
      </item>
@@ -1553,27 +1543,17 @@ font: 10pt &quot;Lucida Sans&quot;;</string>
      <rect>
       <x>200</x>
       <y>180</y>
-      <width>151</width>
+      <width>131</width>
       <height>471</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QLabel" name="memberList">
-       <property name="font">
-        <font>
-         <family>Lucida Sans</family>
-         <pointsize>10</pointsize>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
+      <widget class="QListWidget" name="memberList">
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);
-font: 10pt &quot;Lucida Sans&quot;;</string>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string notr="true">background-color: rgba(255, 255, 255, 0);
+font: 12pt &quot;Lucida Sans&quot;;
+font-color: rgb(0, 0, 0);</string>
        </property>
       </widget>
      </item>
@@ -1642,7 +1622,7 @@ font: 10pt &quot;Lucida Sans&quot;;</string>
      <cursorShape>IBeamCursor</cursorShape>
     </property>
     <property name="placeholderText">
-     <string>New chatroom name...</string>
+     <string>Create a new room...</string>
     </property>
    </widget>
   </widget>

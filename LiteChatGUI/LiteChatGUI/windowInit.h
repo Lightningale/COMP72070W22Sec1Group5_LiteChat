@@ -42,6 +42,7 @@ public slots:
     // chat screen other
     void sender_messages();
     void receive_messages();
+    void populateChatroomList();
 private:
     QStackedWidget* screens;
     char username[usernameLength] = { '\0' };   // stores username

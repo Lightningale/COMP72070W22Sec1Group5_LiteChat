@@ -71,11 +71,14 @@ int windowInit::createClientConn()
     currentState = ClientState::Welcome;
     cursorC = 0;
     //errorFlag = 0;
-    //::thread UIthread(openGUI);
-    ::thread ReceivingThread(recvResponse, ClientSocket);
 
-    //UIthread.join();
-    //ReceivingThread.join();
+
+    //::thread UIthread(ClientSocket);
+    ::thread ReceivingThread(recvResponse, ClientSocket);
+    
+   // UIthread.join();
+   // ReceivingThread.join();
+
     ReceivingThread.detach();
 
 }
@@ -130,8 +133,8 @@ void windowInit::on_loginButton_clicked()
 
         QString CL = QString::fromStdString(chatList);
 
-        s.ui.listofchatrooms->setText(CL);
-        // get members of chatrooms list
+        // populate chatroom list
+        populateChatroomList();
 
         // clear boxes
         l.ui.loginError->setVisible(false);
@@ -247,29 +250,29 @@ void windowInit::on_searchButton_clicked()
 
 void windowInit::on_createChatroomButton_clicked()
 {
-    const char* newRoom;
-    if (s.ui.newChatroomName->toPlainText().isEmpty())
+    char newRoom[chatroomNameSize] = { 0 };
+    if (!s.ui.newChatroomName->toPlainText().isEmpty())
     {
         QString chatroom = s.ui.newChatroomName->toPlainText();
         QByteArray cr = chatroom.toLocal8Bit();
-        newRoom = cr.data();
+        strcpy(newRoom, cr.data());
     }
     else
-        newRoom = "Chatroom";
+        strcpy(newRoom, "Chatroom" + chatroomList.size());
 
-
-    CreateChatroom(ClientSocket, currentUser.username, newRoom);
+    CreateChatroom(ClientSocket, username, newRoom);
     
-
-
+    populateChatroomList();
+    s.update();
 }
 
 void windowInit::on_sendButton_clicked()
 {
+    char msg[messageLength] = { 0 };
     // send current message
     QString rawMsg = s.ui.messageBox->toPlainText();
     QByteArray m = rawMsg.toLocal8Bit();
-    char* msg = m.data();
+    strcpy(msg, m.data());
 
     SendChatMessage(ClientSocket, currentUser.username, currentChatroom.chatroomID, msg);
 
@@ -593,4 +596,13 @@ void windowInit::receive_messages()
     }
 
     s.ui.RMessage8->setText("");
+}
+
+void windowInit::populateChatroomList()
+{
+    for (int i = 0; i < chatroomList.size(); i++)
+    {
+        s.ui.listofchatrooms->addItem(chatroomList[i].chatroomName);
+    }
+    s.update();
 }
