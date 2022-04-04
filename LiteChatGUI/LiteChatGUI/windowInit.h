@@ -57,4 +57,5 @@ private:
     char username[usernameLength] = { '\0' };   // stores username
     char password[passwordLength] = { '\0' };   // stores password
     long chatroomRn;                            // current chatroom
+    long actualroom = chatroomRn - 1;
 };

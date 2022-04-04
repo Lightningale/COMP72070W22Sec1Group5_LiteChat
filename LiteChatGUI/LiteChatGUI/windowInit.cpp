@@ -31,15 +31,12 @@ windowInit::windowInit(QWidget* parent)
     connect(s.ui.logoutButton, SIGNAL(clicked()), this, SLOT(on_logoutButton_clicked()));
     connect(s.ui.searchRoomsButton, SIGNAL(clicked()), this, SLOT(on_searchButton_clicked()));
     connect(s.ui.createChatroomButton, SIGNAL(clicked()), this, SLOT(on_createChatroomButton_clicked()));
-    connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(sender_messages()));
-    connect(s.ui.RecvMsgSendButton, SIGNAL(clicked()), this, SLOT(receive_messages()));
+    //connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(sender_messages()));
+    //connect(s.ui.RecvMsgSendButton, SIGNAL(clicked()), this, SLOT(receive_messages()));
     connect(s.ui.leaveRoomButton, SIGNAL(clicked()), this, SLOT(on_leaveRoomButton_clicked()));
 
-    //connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(on_sendButton_clicked()));
+    connect(s.ui.sendButton, SIGNAL(clicked()), this, SLOT(on_sendButton_clicked()));
     //connect(s.ui.sendImage, SIGNAL(clicked()), this, SLOT(()));
-
-
-
 
     createClientConn();
 }
@@ -76,17 +73,15 @@ int windowInit::createClientConn()
     cursorC = 0;
     //errorFlag = 0;
 
-
     //::thread UIthread(ClientSocket);
     ::thread ReceivingThread(recvResponse, ClientSocket);
-    
-   // UIthread.join();
-   // ReceivingThread.join();
+
+    //// UIthread.join();
+    //ReceivingThread.join();
 
     ReceivingThread.detach();
+    
 }
-
-
 
 
 // login screen buttons
@@ -102,7 +97,7 @@ void windowInit::on_loginButton_clicked()
     QString pass = l.ui.passwordBox->text();
     QByteArray p = pass.toLocal8Bit();
     strcpy(password, p.data());
-
+    
     RegisterLogin(ClientSocket, username, password, 1);
 
     // if the username or password are incorrect
@@ -238,9 +233,9 @@ void windowInit::on_logoutButton_clicked()
 void windowInit::on_searchButton_clicked()
 {
     QString search = s.ui.userSearch->toPlainText();
-    chatroomRn = search.toLong() - 1;
+    chatroomRn = search.toLong();
 
-    JoinChatroom(ClientSocket, chatroomRn);
+    JoinChatroom(ClientSocket, actualroom);
 
 
     if (errorFlag == 3 && (currentState == ClientState::Lobby))
@@ -261,8 +256,8 @@ void windowInit::on_searchButton_clicked()
         //displayChatroomMessages();
 
         //set top bar items
-        s.ui.chatroomName->setText(chatroomList[chatroomRn].chatroomName);
-        QString roomID = QString::number(chatroomList[chatroomRn].chatroomID);
+        s.ui.chatroomName->setText(chatroomList[actualroom].chatroomName);
+        QString roomID = QString::number(chatroomList[actualroom].chatroomID);
         s.ui.chatroomID->setText(roomID);
         s.ui.chatroomName->setVisible(true);
         s.ui.chatroomID->setVisible(true);
@@ -325,6 +320,8 @@ void windowInit::on_leaveRoomButton_clicked()
 // display sender messages on chat screen
 void windowInit::sender_messages() 
 {
+    //on_sendButton_clicked();
+
     QString message = s.ui.messageBox->toPlainText();
     s.ui.messageBox->clear();
 
@@ -647,16 +644,16 @@ void windowInit::populateChatroomList()
 void windowInit::populateChatroomMembers()
 {
     clearMemberList();
-    for (int i = 0; i < chatroomMessageMap[chatroomRn].size(); i++)
+    for (int i = 0; i < chatroomMessageMap[actualroom].size(); i++)
     {
-        s.ui.memberList->addItem(chatroomMemberMap[chatroomRn][i].username);
+        s.ui.memberList->addItem(chatroomMemberMap[actualroom][i].username);
     }
     s.update();
 }
 
 void windowInit::populateChatroomIDList()
 {
-    s.ui.listofroomid->clear();
+    clearChatIDList();
     for (int i = 0; i < chatroomList.size(); i++)
     {
         QString roomID = QString::number(chatroomList[i].chatroomID);
@@ -716,6 +713,26 @@ void windowInit::clearChatSide()
     s.ui.RecvMsgBox->setVisible(false);
     s.ui.RecvMsgSendButton->setVisible(false);
     s.ui.leaveRoomButton->setVisible(false);
+    s.ui.refreshButton->setVisible(false);
 
     // make chat boxes invis + clear
+    // Set all the right side text message boxes transparent 
+    s.ui.RMessage1->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage2->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage3->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage4->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage5->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage6->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage7->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.RMessage8->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+
+    // Set all the left side text message boxes transparent 
+    s.ui.LMessage1->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage2->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage3->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage4->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage5->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage6->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage7->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
+    s.ui.LMessage8->setStyleSheet("QPushButton { background-color: transparent; border: 1px }");
 }
