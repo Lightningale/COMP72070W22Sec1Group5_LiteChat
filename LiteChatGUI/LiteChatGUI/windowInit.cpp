@@ -112,6 +112,10 @@ void windowInit::on_loginButton_clicked()
     {
         l.ui.loginLabel->setVisible(true);
         
+        // pre-reset in case of dupes
+        clearChatroomList();
+        clearMemberList();
+
         ::this_thread::sleep_for(::chrono::milliseconds(2000));   // sleep in case the thread needs to populate the next page
 
         // when the login information is correct the chatroom window will be populated based on the logged in user
@@ -222,8 +226,10 @@ void windowInit::on_logoutButton_clicked()
     // return to login screen
     // log user out
     l.ui.loginLabel->setVisible(false);
-    RegisterLogin(ClientSocket, username, password, 3);
+    RegisterLogin(ClientSocket, username, password, 2);
     screens->setCurrentIndex(0);
+    l.update();
+
 
     // clear screens
     s.ui.noRoom->setVisible(false);
@@ -232,20 +238,46 @@ void windowInit::on_logoutButton_clicked()
     s.ui.chatroomIDLabel->setVisible(false);
     s.ui.RecvMsgBox->setVisible(false);
     s.ui.RecvMsgSendButton->setVisible(false);
+
+    clearChatroomList();
+    clearMemberList();
+    s.ui.messageBox->clear();
+
 }
 
 void windowInit::on_searchButton_clicked()
 {
     QString search = s.ui.userSearch->toPlainText();
-    long roomNum = search.toLong();
+    chatroomRn = search.toLong();
 
-    JoinChatroom(ClientSocket, roomNum);
+    JoinChatroom(ClientSocket, chatroomRn);
 
 
     if (errorFlag == 3 && (currentState == ClientState::Lobby || currentState == ClientState::Chatroom))
     {
         c.ui.loginError->setVisible(true);
     }
+    else if (errorFlag == 0)
+    {
+        // pre clear list
+        clearChatroomList();
+        clearMemberList();
+        // display room members
+        populateChatroomList();
+        populateChatroomMembers();
+        //displayChatroomMessages();
+
+        //set top bar items
+        s.ui.chatroomName->setText(chatroomList[chatroomRn].chatroomName);
+        QString roomID = QString::number(chatroomList[chatroomRn].chatroomID);
+        s.ui.chatroomID->setText(roomID);
+        s.ui.chatroomName->setVisible(true);
+        s.ui.chatroomID->setVisible(true);
+        s.ui.chatroomIDLabel->setVisible(true);
+    }
+
+    s.ui.userSearch->clear();
+    s.update();
 }
 
 void windowInit::on_createChatroomButton_clicked()
@@ -261,8 +293,9 @@ void windowInit::on_createChatroomButton_clicked()
         strcpy(newRoom, "Chatroom" + chatroomList.size());
 
     CreateChatroom(ClientSocket, username, newRoom);
-    
     populateChatroomList();
+
+    s.ui.newChatroomName->clear();
     s.update();
 }
 
@@ -276,6 +309,7 @@ void windowInit::on_sendButton_clicked()
 
     SendChatMessage(ClientSocket, currentUser.username, currentChatroom.chatroomID, msg);
 
+    s.ui.messageBox->clear();
 }
 
 void windowInit::on_sendImage_clicked()
@@ -600,9 +634,47 @@ void windowInit::receive_messages()
 
 void windowInit::populateChatroomList()
 {
+    s.ui.listofchatrooms->clear();
     for (int i = 0; i < chatroomList.size(); i++)
     {
         s.ui.listofchatrooms->addItem(chatroomList[i].chatroomName);
     }
     s.update();
+}
+
+void windowInit::populateChatroomMembers()
+{
+    s.ui.memberList->clear();
+    for (int i = 0; i < chatroomMessageMap[chatroomRn].size(); i++)
+    {
+        s.ui.memberList->addItem(chatroomMemberMap[chatroomRn][i].username);
+    }
+    s.update();
+}
+
+void windowInit::displayChatroomMessages()
+{
+    //DisplayMessage(chatroomMessageMap[currentChatroom.chatroomID][i]);
+}
+
+void windowInit::clearChatroomList()
+{
+    int items = s.ui.listofchatrooms->count();
+
+    while (items > 0)
+    {
+        s.ui.listofchatrooms->takeItem(items);
+        items--;
+    }
+}
+
+void windowInit::clearMemberList()
+{
+    int items = s.ui.memberList->count();
+
+    while (items > 0)
+    {
+        s.ui.memberList->takeItem(items);
+        items--;
+    }
 }

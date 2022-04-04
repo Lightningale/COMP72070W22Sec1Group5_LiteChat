@@ -39,12 +39,18 @@ public slots:
     void on_sendImage_clicked();
 
 
-    // chat screen other
+    // chat screen managing
     void sender_messages();
     void receive_messages();
     void populateChatroomList();
+    void populateChatroomMembers();
+    void displayChatroomMessages();
+    void clearChatroomList();
+    void clearMemberList();
+
 private:
     QStackedWidget* screens;
     char username[usernameLength] = { '\0' };   // stores username
     char password[passwordLength] = { '\0' };   // stores password
+    long chatroomRn;                            // current chatroom
 };
